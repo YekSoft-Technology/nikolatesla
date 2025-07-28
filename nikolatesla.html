@@ -168,578 +168,601 @@
 
     <script>
         // Oyunun anlık durumunu tutan global nesne
-        // Bu nesne, oyuncunun icat puanı, parası, şöhreti ve mevcut bölümünü içerir.
-        let currentGameState = {
-            inventionScore: 0, // Oyuncunun icat yeteneğini temsil eder
-            money: 100,        // Oyuncunun sahip olduğu para miktarı
-            fame: 5,           // Oyuncunun şöhret seviyesi
-            currentChapterId: 'childhood' // Oyuncunun şu anki hikaye bölümünün ID'si
-        };
+// Bu nesne, oyuncunun icat puanı, parası, şöhreti ve mevcut bölümünü içerir.
+let currentGameState = {
+    inventionScore: 0, // Oyuncunun icat yeteneğini temsil eder
+    money: 100,        // Oyuncunun sahip olduğu para miktarı
+    fame: 5,           // Oyuncunun şöhret seviyesi
+    currentChapterId: 'childhood' // Oyuncunun şu anki hikaye bölümünün ID'si
+};
+// Oyunun tüm hikaye bölümlerini ve seçeneklerini içeren ana veri yapısı
+// Her bir bölüm, başlık, metin ve olası seçenekleri tanımlar.
+const allStoryChapters = {
+    // Bölüm: Çocukluk
+    childhood: {
+        title: "Çocukluk Yılları - Smiljan, 1856: Bir Dâhinin İlk Kıvılcımı",
+        text: `Sırbistan'ın Smiljan köyünün dingin atmosferinde, 1856 yılının 10 Temmuz'unda, geleceğin dâhisi Nikola Tesla dünyaya gözlerini açtı. Köyün ahşap evleri ve yemyeşil tarlaları arasında geçen çocukluğu, onun zihinsel gelişimini derinden etkileyecekti. Babası Milutin Tesla, saygıdeğer bir Ortodoks papazıydı; dini metinlerin ve felsefenin derinliklerine dalmış, keskin zekâsıyla tanınan bir adam. Annesi Đuka Mandić ise bambaşka bir dehaydı: okula gitmemiş olmasına rağmen, ev aletlerini kendi elleriyle icat eden, pratik zekâsı ve inanılmaz hafızasıyla çevresindekileri hayran bırakan bir kadındı. Nikola, annesinin atölyesinde geçirdiği saatlerde, basit mekanizmaların nasıl olağanüstü işler başarabileceğine tanık oldu ve bu, onun içindeki mucit ruhunu besledi.
 
-        // Oyunun tüm hikaye bölümlerini ve seçeneklerini içeren ana veri yapısı
-        // Her bir bölüm, başlık, metin ve olası seçenekleri tanımlar.
-        const allStoryChapters = {
-            // Bölüm: Çocukluk
-            childhood: {
-                title: "Çocukluk - Smiljan, 1856",
-                text: `Küçük Nikola Tesla, Sırbistan'ın Smiljan köyünde doğdu. Babası Milutin Tesla bir Ortodoks papazı, annesi Đuka ise ev aletleri icat eden yetenekli bir kadındı.
-                Nikola henüz çocukken elektrik çarpması geçirdi ve bu olay onu elektriğe karşı hem korkuttu hem de büyüledi. Parlak zekâsı ve sıra dışı hafızası öğretmenlerini şaşırtıyordu.`,
-                choices: [
-                    {
-                        text: "Annenin icatlarını inceleyip ona yardım et",
-                        next: "education1",
-                        effects: { inventionScore: 5, fame: 2 } // Bu seçimin etkileri
-                    },
-                    {
-                        text: "Elektrikle daha fazla deney yapmaya odaklan",
-                        next: "education2",
-                        effects: { inventionScore: 8, fame: 1 }
-                    }
-                ]
+        Henüz küçücük bir çocukken, hayatını sonsuza dek değiştirecek bir olay yaşadı. Bir gün, elektrik akımıyla oynarken şiddetli bir elektrik çarpması geçirdi. Bu sarsıcı deneyim, onu elektriğe karşı hem derin bir korkuyla doldurdu hem de inanılmaz bir merakla büyüledi. Elektriğin görünmez gücü, zihninde çözülmesi gereken en büyük gizem haline geldi. Okulda, yaşıtlarından kat kat ilerideydi. Matematik ve fizikteki olağanüstü yeteneği, karmaşık problemleri zihninden çözmesi ve olayları görselleştirebilme yeteneği öğretmenlerini hayrete düşürüyordu. Gözlerinin içi pırıltılarla dolu, sürekli sorular soran, dünyayı anlamaya çalışan küçük bir kâşifti o. Her şeyin ardındaki prensipleri merak ediyor, bulutların neden şimşek çaktığını, suyun neden aktığını sorguluyordu. Zihni, adeta bir elektrik devresi gibi, sürekli yeni fikirler üretiyordu.`,
+        choices: [
+            {
+                text: "Annenin icatlarını daha yakından incele, ona atölyesinde yardım et ve mekanik prensiplerini öğrenerek pratik becerilerini geliştir.",
+                next: "education1",
+                effects: { inventionScore: 5, fame: 2 } // Bu seçimin etkileri
             },
-            // Bölüm: Eğitim Yılları 1
-            education1: {
-                title: "Eğitim Yılları - Graz, 1875",
-                text: `Annenin icatlarından ilham alan Tesla, Graz Teknik Üniversitesi'nde mühendislik okumaya başladı. Ancak profesörü DC motorları gösterirken, Tesla bunların verimsiz olduğunu ve AC motorların daha iyi olacağını söyledi.
-                Profesörü onu sınıfın önünde aşağıladı: "Bay Tesla, böyle bir motor asla çalışmaz!"`,
-                choices: [
-                    {
-                        text: "Profesöre saygı göster ve konuyu kapat",
-                        next: "budapest1",
-                        effects: { money: 20, fame: -1 }
-                    },
-                    {
-                        text: "Israrla AC motorun mümkün olduğunu savun",
-                        next: "budapest2",
-                        effects: { inventionScore: 10, fame: 3, money: -10 }
-                    }
-                ]
-            },
-            // Bölüm: Eğitim Yılları 2
-            education2: {
-                title: "Elektrik Deneyleri - Graz, 1875",
-                text: `Elektriğe odaklanan Tesla, üniversitede her gün 20 saat çalışıyordu. DC motorları inceledi ve bunların fırçalı yapısının sürekli kıvılcım çıkardığını fark etti.
-                Bir gece laboratuvarda çalışırken, dönen manyetik alan fikrini keşfetti. Bu AC motorun temelini oluşturan devrim niteliğindeki bir buluştu!`,
-                choices: [
-                    {
-                        text: "Fikrini hemen profesörünle paylaş",
-                        next: "budapest2",
-                        effects: { inventionScore: 12, fame: 5 }
-                    },
-                    {
-                        text: "Önce daha fazla araştır ve geliştir",
-                        next: "budapest1",
-                        effects: { inventionScore: 15, money: 10 }
-                    }
-                ]
-            },
-            // Bölüm: Budapeşte 1
-            budapest1: {
-                title: "Budapeşte - İlk İş, 1882",
-                text: `Tesla Budapeşte'de Macar Posta ve Telgraf İdaresi'nde çalışmaya başladı. Burada telefon santrali kurdu ve birçok teknik iyileştirme yaptı.
-                Bir gün parkta yürürken, aniden AC motorun nasıl çalışacağını tam olarak gördü! Kafasında mükemmel bir tasarım belirmişti.`,
-                choices: [
-                    {
-                        text: "Hemen bir prototip yapmaya çalış",
-                        next: "paris1",
-                        effects: { inventionScore: 20, money: -30 }
-                    },
-                    {
-                        text: "Amerika'ya gidip Edison'la çalışmak için para biriktir",
-                        next: "paris2",
-                        effects: { money: 50, fame: 3 }
-                    }
-                ]
-            },
-            // Bölüm: Budapeşte 2
-            budapest2: {
-                title: "Budapeşte - Tanınmış Mucit, 1882",
-                text: `AC motor fikrini paylaştıktan sonra Tesla, Budapeşte'de tanınmış bir mucit oldu. Şehrin ileri gelenleri onu desteklemeye başladı.
-                Ancak AC motorunu gerçekten yapmak için daha fazla kaynak ve teknolojiye ihtiyacı vardı. Paris'te Edison'ın şirketi bu imkânları sağlayabilirdi.`,
-                choices: [
-                    {
-                        text: "Budapeşte'de destek bulup motor üzerinde çalış",
-                        next: "paris1",
-                        effects: { inventionScore: 25, money: 30 }
-                    },
-                    {
-                        text: "Paris'e git ve Edison'ın şirketine katıl",
-                        next: "paris2",
-                        effects: { fame: 8, money: 20 }
-                    }
-                ]
-            },
-            // Bölüm: Paris 1
-            paris1: {
-                title: "Paris - Continental Edison Company, 1883",
-                text: `Tesla Paris'te Edison'ın Avrupa şirketinde çalışmaya başladı. AC motor tasarımını geliştirmeye devam etti ancak şirket sadece DC sistemlerle ilgileniyordu.
-                Bir gün önemli bir DC jeneratörü arızalandı ve kimse tamir edemiyordu. Tesla sorunu hemen çözdü ve yöneticiler çok etkilendi.`,
-                choices: [
-                    {
-                        text: "AC motor fikrini şirket yöneticilerine sun",
-                        next: "america1",
-                        effects: { inventionScore: 15, fame: 10 }
-                    },
-                    {
-                        text: "Sessizce çalış ve Amerika'ya gitmek için hazırlan",
-                        next: "america2",
-                        effects: { money: 80, inventionScore: 10 }
-                    }
-                ]
-            },
-            // Bölüm: Paris 2
-            paris2: {
-                title: "Paris - Hızlı Yükseliş, 1883",
-                text: `Şöhretiyle Paris'e gelen Tesla, hemen Edison şirketinin üst düzey mühendisi oldu. DC sistemleri konusunda uzmanlaştı ancak AC motorunu geliştirme hayali hiç aklından çıkmıyordu.
-                Edison'ın kendisi Tesla'nın yeteneklerini duydu ve onu Amerika'ya davet etti: "Genç adam, senin gibi bir dâhinin Amerika'da çalışması gerek!"`,
-                choices: [
-                    {
-                        text: "Hemen Edison'ın teklifini kabul et",
-                        next: "america2",
-                        effects: { fame: 15, money: 100 }
-                    },
-                    {
-                        text: "Önce Paris'te AC motorunu tamamlamaya çalış",
-                        next: "america1",
-                        effects: { inventionScore: 30 }
-                    }
-                ]
-            },
-            // Bölüm: Amerika 1
-            america1: {
-                title: "Amerika - Edison'la Çalışma, 1884",
-                text: `Tesla New York'a geldi ve Edison'la çalışmaya başladı. Edison ona DC jeneratörlerini iyileştirmesi için büyük bir proje verdi ve başarı karşılığında 50,000 dolar vaat etti.
-                Tesla aylar boyunca çalıştı ve jeneratörleri büyük ölçüde geliştirdi. Ancak Edison ödemeyi reddetti: "Tesla, sen Amerika mizahını anlamıyorsun!"`,
-                choices: [
-                    {
-                        text: "Edison'ın yanında kalmaya devam et",
-                        next: "westinghouse1",
-                        effects: { money: 200, fame: -5 }
-                    },
-                    {
-                        text: "Hemen istifa et ve kendi şirketini kur",
-                        next: "own_company",
-                        effects: { inventionScore: 20, money: -50, fame: 5 }
-                    }
-                ]
-            },
-            // Bölüm: Amerika 2
-            america2: {
-                title: "Amerika - Parlak Başlangıç, 1884",
-                text: `Yüksek ücretle Edison'ın şirketine katılan Tesla, hemen önemli projeler üzerinde çalışmaya başladı. DC sistemlerini iyileştirirken, gizlice AC motor prototipi de yapıyordu.
-                Edison Tesla'nın AC çalışmalarını öğrendi ve çok kızdı: "AC elektrik insanları öldürür! Benim DC sistemim güvenlidir!"`,
-                choices: [
-                    {
-                        text: "Edison haklı, DC sistemi üzerinde çalış",
-                        next: "westinghouse1",
-                        effects: { money: 300, fame: 10, inventionScore: -10 }
-                    },
-                    {
-                        text: "AC motorun güvenli olduğunu kanıtlamaya çalış",
-                        next: "own_company",
-                        effects: { inventionScore: 35, fame: 8 }
-                    }
-                ]
-            },
-            // Bölüm: Kendi Şirketi
-            own_company: {
-                title: "Tesla Electric Company, 1885",
-                text: `Tesla kendi şirketini kurdu ancak destekçileri sadece ark lambası patent etmesini istiyordu. AC motor konusunda ilgisizlerdi.
-                Para bittiğinde Tesla sokakta kaldı ve geçimini kazma kürekle çalışarak sağladı. Ancak AC motor hayali onu yaşatıyordu.`,
-                choices: [
-                    {
-                        text: "AC motorundan vazgeç ve ark lambasına odaklan",
-                        next: "westinghouse1",
-                        effects: { money: 150, inventionScore: -15 }
-                    },
-                    {
-                        text: "Zorluklara rağmen AC motor üzerinde çalışmaya devam et",
-                        next: "westinghouse2",
-                        effects: { inventionScore: 40, fame: 15 }
-                    }
-                ]
-            },
-            // Bölüm: Westinghouse ile Anlaşma 1
-            westinghouse1: {
-                title: "Westinghouse ile Anlaşma - 1888",
-                text: `AC motor hayalinden vazgeçmeyen Tesla, nihayet George Westinghouse'u ikna etti. Westinghouse AC motorun potansiyelini gördü ve Tesla'nın patentlerini satın aldı.
-                "Bay Tesla, sizin motorunuz elektrik tarihini değiştirecek!" dedi Westinghouse ve 1 milyon dolarlık anlaşma imzaladılar.`,
-                choices: [
-                    {
-                        text: "Westinghouse ile ortaklığı derinleştir",
-                        next: "war_of_currents1",
-                        effects: { money: 500, fame: 25, inventionScore: 30 }
-                    },
-                    {
-                        text: "Bağımsız çalışmaya devam et",
-                        next: "war_of_currents2",
-                        effects: { inventionScore: 50, fame: 20 }
-                    }
-                ]
-            },
-            // Bölüm: Westinghouse'un Keşfi 2
-            westinghouse2: {
-                title: "Westinghouse'un Keşfi - 1888",
-                text: `Zorluklarla mücadele eden Tesla'nın AC motoru nihayet Westinghouse'un dikkatini çekti. Westinghouse Tesla'nın laboratuvarını ziyaret etti ve motorun çalıştığını gördü.
-                "Bu inanılmaz! Bu motor tüm dünyayı değiştirecek!" diye haykırdı Westinghouse. Tesla'ya çok büyük bir teklif yaptı.`,
-                choices: [
-                    {
-                        text: "Westinghouse'un teklifini kabul et",
-                        next: "war_of_currents1",
-                        effects: { money: 800, fame: 30, inventionScore: 25 }
-                    },
-                    {
-                        text: "Daha iyi bir anlaşma için pazarlık yap",
-                        next: "war_of_currents2",
-                        effects: { money: 1200, fame: 40, inventionScore: 35 }
-                    }
-                ]
-            },
-            // Bölüm: Akımlar Savaşı 1
-            war_of_currents1: {
-                title: "Akımlar Savaşı - 1890",
-                text: `Edison ve Tesla arasında 'Akımlar Savaşı' başladı. Edison AC'nin tehlikeli olduğunu göstermek için fil elektrikle öldürdü ve elektrikli sandalye icat etti.
-                Tesla ise AC'nin güvenli olduğunu kanıtlamak için kendi vücudundan yüksek voltajlı AC akım geçirdi. Seyirciler dehşet içinde izledi!`,
-                choices: [
-                    {
-                        text: "Daha dramatik gösteriler yap",
-                        next: "world_fair1",
-                        effects: { fame: 50, inventionScore: 20 }
-                    },
-                    {
-                        text: "Bilimsel yöntemlerle AC'nin üstünlüğünü kanıtla",
-                        next: "world_fair2",
-                        effects: { inventionScore: 45, fame: 30 }
-                    }
-                ]
-            },
-            // Bölüm: Akımlar Savaşı 2
-            war_of_currents2: {
-                title: "Bağımsız Savaş - 1890",
-                text: `Tesla kendi başına Edison'a karşı savaş veriyordu. AC motorun patentlerinden iyi para kazanıyor ancak Edison'ın propagandasına karşı durmak zorlaşıyordu.
-                Bir gün Tesla, Westinghouse'un mali durumunun kötü olduğunu öğrendi. Patent ücretlerinden vazgeçmesi gerekebilirdi.`,
-                choices: [
-                    {
-                        text: "Patent haklarından vazgeç ve Westinghouse'u kurtar",
-                        next: "world_fair2",
-                        effects: { fame: 60, money: -800, inventionScore: 30 }
-                    },
-                    {
-                        text: "Patent haklarını başka şirkete sat",
-                        next: "world_fair1",
-                        effects: { money: 2000, fame: -20 }
-                    }
-                ]
-            },
-            // Bölüm: Chicago Dünya Fuarı 1
-            world_fair1: {
-                title: "Chicago Dünya Fuarı - 1893",
-                text: `Tesla'nın AC sistemi Chicago Dünya Fuarı'nı aydınlatmak için seçildi. 200,000 ampul AC elektrikle yanıyordu ve milyonlarca insan bu mucizeyi görüyordu.
-                Tesla sahne aldı ve elinde tuttuğu ampulleri kablosuz olarak yakmaya başladı. Kalabalık çılgına döndü: "Bu adam bir büyücü mü?"`,
-                choices: [
-                    {
-                        text: "Kablosuz elektrik üzerinde çalışmaya yoğunlaş",
-                        next: "colorado1",
-                        effects: { inventionScore: 60, fame: 70 }
-                    },
-                    {
-                        text: "AC elektriği yaygınlaştırmaya odaklan",
-                        next: "niagara",
-                        effects: { money: 1000, fame: 50 }
-                    }
-                ]
-            },
-            // Bölüm: Bilimin Zaferi 2
-            world_fair2: {
-                title: "Bilimin Zaferi - 1893",
-                text: `Tesla bilimsel yöntemlerle AC'nin üstünlüğünü kanıtladı. Chicago Dünya Fuarı'ndaki AC sistemi mükemmel çalıştı ve Edison'ın DC sistemi tamamen gölgede kaldı.
-                Westinghouse'u kurtarmak için patent haklarından vazgeçen Tesla, artık dünyanın en tanınmış mucidiydi. Parasız ama şöhretliydi.`,
-                choices: [
-                    {
-                        text: "Yeni icatlar peşinde koş",
-                        next: "colorado2",
-                        effects: { inventionScore: 80, fame: 80 }
-                    },
-                    {
-                        text: "Niagara projesine odaklan",
-                        next: "niagara",
-                        effects: { money: 500, inventionScore: 40 }
-                    }
-                ]
-            },
-            // Bölüm: Niagara Şelalesi Projesi
-            niagara: {
-                title: "Niagara Şelalesi Projesi - 1896",
-                text: `Tesla'nın AC sistemi Niagara Şelalesi'nden elektrik üretmek için seçildi. Bu, AC elektriğin DC'ye karşı kesin zaferiydi.
-                İlk kez bir şelale gücü şehirleri aydınlatmak için kullanılıyordu. Tesla'nın hayali gerçek olmuştu: ucuz, güvenli elektrik herkes için!`,
-                choices: [
-                    {
-                        text: "Kablosuz elektrik transferi araştırmalarına başla",
-                        next: "colorado1",
-                        effects: { inventionScore: 70, fame: 60 }
-                    },
-                    {
-                        text: "X-ışınları ve tıbbi cihazlar geliştir",
-                        next: "medical",
-                        effects: { inventionScore: 50, fame: 45, money: 800 }
-                    }
-                ]
-            },
-            // Bölüm: Tıbbi İcatlar
-            medical: {
-                title: "Tıbbi İcatlar - 1898",
-                text: `Tesla X-ışınlarıyla deneyler yaptı ve ilk X-ray cihazlarını geliştirdi. Ayrıca yüksek frekanslı akımların tıbbi faydalarını keşfetti.
-                Diyatermi cihazı icat etti ve bu modern tıbbın temelini oluşturdu. Ancak Tesla'nın asıl hayali kablosuz elektrik dünyasıydı.`,
-                choices: [
-                    {
-                        text: "Tıbbi icatlara devam et",
-                        next: "final_medical",
-                        effects: { money: 2000, fame: 70, inventionScore: 60 }
-                    },
-                    {
-                        text: "Kablosuz elektrik hayalini takip et",
-                        next: "colorado2",
-                        effects: { inventionScore: 90, fame: 80 }
-                    }
-                ]
-            },
-            // Bölüm: Colorado Springs 1
-            colorado1: {
-                title: "Colorado Springs - 1899",
-                text: `Tesla Colorado Springs'e gitti ve dev bir laboratuvar kurdu. Amacı kablosuz elektrik iletimi deneyleriydi.
-                60 metre yükseklikteki bobin ile yapay şimşekler üretti. Tüm şehrin elektriği kesildi ama Tesla 200 kilometre ötedeki ampulleri kablosuz yakmayı başardı!`,
-                choices: [
-                    {
-                        text: "Deneyleri genişlet ve dünya çapında kablosuz elektrik sistemi kur",
-                        next: "wardenclyffe1",
-                        effects: { inventionScore: 100, fame: 90 }
-                    },
-                    {
-                        text: "Daha güvenli deneyler yaparak sistemi mükemmelleştir",
-                        next: "wardenclyffe2",
-                        effects: { inventionScore: 80, money: 500 }
-                    }
-                ]
-            },
-            // Bölüm: Colorado Springs 2
-            colorado2: {
-                title: "Colorado Springs - Dâhi İş Başında, 1899",
-                text: `Parasızlığa rağmen Colorado'ya giden Tesla, büyük fedakârlıklarla laboratuvarını kurdu. Gece gündüz çalışarak kablosuz elektrik iletimini çözmeye çalıştı.
-                Bir gece, dünyanın doğal elektrik frekansını keşfetti. Bu buluş ile tüm dünyaya kablosuz elektrik gönderebileceğini anladı!`,
-                choices: [
-                    {
-                        text: "Keşfini hemen duyur ve yatırımcı ara",
-                        next: "wardenclyffe1",
-                        effects: { fame: 100, money: 1000 }
-                    },
-                    {
-                        text: "Önce teknolojini mükemmelleştir",
-                        next: "wardenclyffe2",
-                        effects: { inventionScore: 120, fame: 70 }
-                    }
-                ]
-            },
-            // Bölüm: Wardenclyffe Kulesi 1
-            wardenclyffe1: {
-                title: "Wardenclyffe Kulesi - 1901",
-                text: `J.P. Morgan'ın desteğiyle Tesla Long Island'da Wardenclyffe Kulesi'ni inşa etmeye başladı. Bu kule dünya çapında kablosuz elektrik ve haberleşme sağlayacaktı.
-                Ancak Morgan, Tesla'nın parasız elektrik planını öğrenince desteğini çekti: "Eğer herkes bedava elektrik kullanırsa, ben nasıl para kazanacağım?"`,
-                choices: [
-                    {
-                        text: "Başka yatırımcılar bul ve projeyi tamamla",
-                        next: "final_success",
-                        effects: { inventionScore: 150, fame: 120 }
-                    },
-                    {
-                        text: "Projeyi küçült ve radyo iletişimine odaklan",
-                        next: "final_radio",
-                        effects: { money: 1500, fame: 80, inventionScore: 70 }
-                    }
-                ]
-            },
-            // Bölüm: Wardenclyffe Kulesi 2
-            wardenclyffe2: {
-                title: "Wardenclyffe - Mükemmellik Arayışı, 1901",
-                text: `Tesla Wardenclyffe projesini daha dikkatli planladı. Teknolojisi mükemmeldi ancak yatırımcılar parasız elektrik fikrinden rahatsızdı.
-                Kule neredeyse tamamlandığında, Marconi kablosuz telgrafı buldu ve Tesla'nın patent haklarını çaldı. Dünya Marconi'yi alkışladı.`,
-                choices: [
-                    {
-                        text: "Marconi'ye karşı hukuk mücadelesi ver",
-                        next: "final_legal",
-                        effects: { money: 2000, fame: 60, inventionScore: 90 }
-                    },
-                    {
-                        text: "Marconi'yi boş ver ve kablosuz elektrik dünyasını kur",
-                        next: "final_success",
-                        effects: { inventionScore: 200, fame: 150 }
-                    }
-                ]
-            },
-            // Final Bölümü: Dâhinin Zaferi
-            final_success: {
-                title: "Dâhinin Zaferi - 1905",
-                text: `Tesla tüm zorluklara rağmen Wardenclyffe Kulesi'ni tamamladı. İlk kez dünya çapında kablosuz elektrik iletimi başarıyla gerçekleşti!
-                Tüm dünya Tesla'nın dâhiliğini kabul etti. Ücretsiz elektrik çağı başladı ve insanlık yeni bir döneme girdi. Tesla'nın adı tarihe altın harflerle yazıldı.
-                "Elektrik, insanlığın ortak mirasıdır!" dedi Tesla zafer günü.`,
-                choices: [
-                    {
-                        text: "Oyunu Yeniden Başlat",
-                        next: "childhood", // Oyunu başlangıca sıfırla
-                        effects: { inventionScore: 0, money: 100, fame: 5 } // Başlangıç değerlerine dön
-                    }
-                ]
-            },
-            // Final Bölümü: Radyo Mucidi
-            final_radio: {
-                title: "Radyo Mucidi - 1907",
-                text: `Tesla radyo teknolojisine odaklandı ve modern haberleşmenin temellerini attı. Wardenclyffe kablosuz haberleşme merkezi olarak hizmet verdi.
-                Marconi'nin aksine Tesla, radyo teknolojisini herkesle paylaştı. Bu sayede teknoloji hız
-                Bu seçim Tesla'yı radyo iletişiminde bir öncü yapar, ancak kablosuz enerji hayali tam olarak gerçekleşmez. Yine de insanlığa büyük bir miras bırakır.`,
-                choices: [
-                    {
-                        text: "Oyunu Yeniden Başlat",
-                        next: "childhood",
-                        effects: { inventionScore: 0, money: 100, fame: 5 }
-                    }
-                ]
-            },
-            // Final Bölümü: Yasal Mücadele
-            final_legal: {
-                title: "Yasal Mücadeleler - 1910",
-                text: `Tesla, Marconi'ye karşı uzun ve yorucu bir hukuk mücadelesine girişti. Yıllar süren davalar sonucunda Yüksek Mahkeme Tesla'nın haklı olduğuna karar verdi.
-                Ancak bu süreçte Tesla'nın enerjisi ve finansal kaynakları tükendi. Dünya, radyonun asıl mucidinin Tesla olduğunu öğrendi ama kablosuz elektrik hayali yarım kaldı.`,
-                choices: [
-                    {
-                        text: "Oyunu Yeniden Başlat",
-                        next: "childhood",
-                        effects: { inventionScore: 0, money: 100, fame: 5 }
-                    }
-                ]
-            },
-            // Final Bölümü: Tıbbi Gelişmeler
-            final_medical: {
-                title: "Tıbbi Gelişmeler ve Huzurlu Yaşam - 1920",
-                text: `Tesla hayatının kalanını tıbbi cihazlar ve yüksek frekanslı akımlar üzerine çalışarak geçirdi. Diyatermi ve diğer tedavilerle binlerce insanın hayatını kurtardı.
-                Kablosuz elektrik hayalinden vazgeçmiş olsa da, tıp dünyasına yaptığı katkılarla büyük saygı gördü ve huzurlu bir yaşam sürdü.`,
-                choices: [
-                    {
-                        text: "Oyunu Yeniden Başlat",
-                        next: "childhood",
-                        effects: { inventionScore: 0, money: 100, fame: 5 }
-                    }
-                ]
+            {
+                text: "Elektrikle ilgili daha fazla deney yapmaya odaklan, basit devreler kur ve şimşeğin gizemini çözmek için doğal fenomenleri gözlemle.",
+                next: "education2",
+                effects: { inventionScore: 8, fame: 1 }
             }
-            // Gelecekte eklenebilecek daha fazla bölüm buraya gelebilir.
-        };
+        ]
+    },
+    // Bölüm: Eğitim Yılları 1
+    education1: {
+        title: "Eğitim Yılları - Graz, 1875: DC Akımın Sınırları ve İlk Meydan Okuma",
+        text: `Annesinin el yapımı icatlarından edindiği ilham ve pratik zekâsıyla donanmış olan genç Tesla, 1875 yılında Graz Teknik Üniversitesi'nin kapılarından içeri adım attı. Mühendislik eğitimi, onun için bir tutkuya dönüştü. Laboratuvarlar, derslikler ve kütüphaneler onun yeni eviydi. Özellikle fizik ve elektrik dersleri, zihnini en çok meşgul eden alanlardı. Bir gün, Elektrik Mühendisliği Profesörü Poeschl, öğrencilerine doğru akım (DC) motorlarının çalışma prensiplerini büyük bir hevesle anlatıyordu. Motorun fırçalarından çıkan kıvılcımlar, sınıfın karanlık odasında göz kamaştırıyordu. Ancak Nikola, bu manzarayı izlerken bir gariplik fark etti. DC motorların fırçalı yapısı, sürekli enerji kaybına ve verimsizliğe neden oluyordu. Zihninde, çok daha üstün, fırçasız bir alternatif akım (AC) motorunun vizyonu belirmeye başladı.
 
-        // DOM elemanlarına referanslar
-        const startScreenElement = document.getElementById('start-screen');
-        const gameScreenElement = document.getElementById('game-screen');
-        const storyContentElement = document.getElementById('story-content');
-        const choicesContainerElement = document.getElementById('choices-container');
-        const inventionScoreElement = document.getElementById('invention-score');
-        const moneyElement = document.getElementById('money');
-        const fameElement = document.getElementById('fame');
-
-        /**
-         * Oyunu başlatan ana fonksiyon.
-         * Başlangıç ekranını gizler ve oyun ekranını gösterir.
-         * Ardından ilk hikaye bölümünü yükler.
-         */
-        function startGame() {
-            // Başlangıç ekranını gizle
-            startScreenElement.classList.add('hidden');
-            // Oyun ekranını göster
-            gameScreenElement.classList.remove('hidden');
-            // İlk bölümü yükle (currentChapterId 'childhood' olarak ayarlanmıştı)
-            loadStoryChapter(currentGameState.currentChapterId);
-        }
-
-        /**
-         * İstatistikleri güncelleyen yardımcı fonksiyon.
-         * currentGameState nesnesindeki değerleri alarak HTML'deki ilgili yerlere yazar.
-         */
-        function updateGameStats() {
-            inventionScoreElement.textContent = currentGameState.inventionScore;
-            moneyElement.textContent = currentGameState.money;
-            fameElement.textContent = currentGameState.fame;
-        }
-
-        /**
-         * Belirli bir hikaye bölümünü yükleyen fonksiyon.
-         * @param {string} chapterId Yüklenecek bölümün ID'si (örneğin 'childhood').
-         */
-        function loadStoryChapter(chapterId) {
-            // currentGameState içindeki mevcut bölümü güncelle
-            currentGameState.currentChapterId = chapterId;
-            // Yüklenecek bölüm verilerini allStoryChapters objesinden al
-            const chapterData = allStoryChapters[chapterId];
-
-            // Eğer bölüm bulunamazsa, hata mesajı göster ve oyunu yeniden başlat.
-            if (!chapterData) {
-                console.error("Hata: Bölüm bulunamadı! ID:", chapterId);
-                alert("Oyun hatası oluştu, oyun yeniden başlatılıyor.");
-                resetGame();
-                return;
+        Dayanamadı, elini kaldırdı ve yüksek sesle itiraz etti: "Profesör, bu motorlar verimsizdir! Alternatif akımla fırçasız bir motor yapmak mümkün olmalı, çok daha iyi çalışır!" Sınıftaki herkes, hatta profesör bile şaşkınlıkla ona baktı. Profesör Poeschl'in yüzünde alaycı bir gülümseme belirdi. Gözlüğünü düzeltti ve tüm sınıfın duyacağı bir ses tonuyla, küçümseyerek cevap verdi: "Bay Tesla, böyle bir motor asla çalışmaz! Bu, insan doğasına aykırı, sürekli hareket makinesi hayal etmekten farksızdır. İmkânsızdır!" Sınıftan hafif bir kıkırdama duyuldu. Nikola'nın yüzü kızardı, ancak gözlerinde sönmeyen bir azim vardı. Bu aşağılama, onun için bir kırılma noktası oldu.`,
+        choices: [
+            {
+                text: "Profesörün otoritesine saygı göster, konuyu sessizce kapat ve ileride kendi çalışmalarında bu fikri geliştirmeyi bekle.",
+                next: "budapest1",
+                effects: { money: 20, fame: -1 }
+            },
+            {
+                text: "Profesöre karşı ısrarla AC motorun bilimsel olarak mümkün olduğunu ve geleceğin teknolojisi olacağını savun, bu fikri herkese açıkla.",
+                next: "budapest2",
+                effects: { inventionScore: 10, fame: 3, money: -10 }
             }
+        ]
+    },
+    // Bölüm: Eğitim Yılları 2
+    education2: {
+        title: "Elektrik Deneyleri - Graz, 1875: Manyetik Alanların Dansı ve Bir Devrimin Doğuşu",
+        text: `Küçük yaşta yaşadığı elektrik çarpması deneyimi, Nikola Tesla'yı elektriğin derinliklerine çekmişti. Graz Teknik Üniversitesi'nde eğitime başladığında, tüm enerjisini bu görünmez gücün sırlarını çözmeye adadı. Her gün, adeta bir takıntıya dönüşen bir çalışma temposuyla, laboratuvarda 20 saati aşkın süre geçiriyordu. Yemek yemeyi, uyumayı unutuyor, sadece elektrik devreleriyle, mıknatıslarla ve tellerle uğraşıyordu. DC motorlarının çalışma prensiplerini santim santim inceliyor, her bir kıvılcımı, her bir mekanik sürtünmeyi analiz ediyordu. Kıvılcım çıkaran fırçaların neden olduğu verimsizliği ve enerji kaybını net bir şekilde görüyordu. Bu fırçaların sürekli bakım gerektirmesi ve aşınması, onun için kabul edilemez bir kusurdu.
 
-            // Hikaye içeriğini ve seçenekleri temizle
-            storyContentElement.innerHTML = `<h2>${chapterData.title}</h2><p>${chapterData.text}</p>`;
-            choicesContainerElement.innerHTML = '';
-
-            // Her bir seçim için buton oluştur ve ekle
-            chapterData.choices.forEach(choice => {
-                const choiceButton = document.createElement('button');
-                choiceButton.classList.add('choice-btn');
-                choiceButton.textContent = choice.text;
-                // Butona tıklama olay dinleyicisi ekle
-                choiceButton.onclick = () => handlePlayerChoice(choice.next, choice.effects);
-                choicesContainerElement.appendChild(choiceButton);
-            });
-
-            // İstatistikleri güncelle
-            updateGameStats();
-        }
-
-        /**
-         * Oyuncunun bir seçim yaptığında çağrılan fonksiyon.
-         * Seçimin etkilerini uygular ve bir sonraki bölümü yükler.
-         * @param {string} nextChapterId Bir sonraki bölümün ID'si.
-         * @param {object} effects Seçimin oyun durumuna etkileri (inventionScore, money, fame).
-         */
-        function handlePlayerChoice(nextChapterId, effects) {
-            // Eğer etkiler varsa, bunları mevcut oyun durumuna ekle
-            if (effects) {
-                currentGameState.inventionScore += (effects.inventionScore || 0);
-                currentGameState.money += (effects.money || 0);
-                currentGameState.fame += (effects.fame || 0);
+        Bir gece, laboratuvarın loş ışıkları altında, yorgunluktan gözleri kapanmak üzereyken, zihninde aniden bir ampul yandı. DC motorun rotorunun nasıl döndüğünü gözünde canlandırırken, dönen bir manyetik alanın aynı etkiyi çok daha verimli bir şekilde yaratabileceğini fark etti. Bu, tıpkı bir rüya gibi, tüm detaylarıyla gözlerinin önünde canlandı. Manyetik alanların birbirini kovaladığı, rotorun bir fırça veya komütatör olmadan nasıl sürekli dönebileceği... Bu, Alternatif Akım (AC) motorunun temelini oluşturan, elektrik mühendisliğinde çığır açacak devrim niteliğindeki bir buluştu! Yorgunluğu bir anda geçti, yerinden fırladı. Kalbi hızla çarpıyordu. Bu keşif, sadece bir fikir değil, tüm dünyanın geleceğini değiştirecek bir potansiyel barındırıyordu.`,
+        choices: [
+            {
+                text: "Bu devrim niteliğindeki fikri hemen profesörünle ve üniversite yönetimiyle paylaş, onlardan destek ve yatırım talep et.",
+                next: "budapest2",
+                effects: { inventionScore: 12, fame: 5 }
+            },
+            {
+                text: "Fikrini şimdilik kendine sakla, daha fazla araştırma yap, çizimlerini ve hesaplamalarını mükemmelleştirerek prototip aşamasına gelmek için çabala.",
+                next: "budapest1",
+                effects: { inventionScore: 15, money: 10 }
             }
+        ]
+    },
+    // Bölüm: Budapeşte 1
+    budapest1: {
+        title: "Budapeşte - İlk İş ve Zihinlerdeki Şimşek, 1882",
+        text: `Graz'daki eğitim yıllarının ardından, genç Nikola Tesla, 1882 yılında Budapeşte'ye doğru yola çıktı. Buradaki Macar Posta ve Telgraf İdaresi'nde kendisine bir iş bulmuştu. Bu, ilk profesyonel deneyimi olacaktı. Görevi, şehrin telefon santralini kurmak ve mevcut telgraf sistemlerini iyileştirmekti. Tesla, işine büyük bir ciddiyet ve özenle yaklaştı. Sadece verilen görevleri yapmakla kalmıyor, aynı zamanda her sistemde iyileştirme potansiyeli arıyordu. Telefon santralinin verimliliğini artıran birçok teknik yenilik geliştirdi, kısa sürede adından söz ettirmeye başladı. Ancak zihninin derinliklerinde, Graz'da filizlenen o büyük hayal, Alternatif Akım motoru, hiç dinmeden onu meşgul ediyordu. Boş zamanlarında, zihninde sürekli yeni tasarımlar çiziyor, mevcut elektrik sistemlerinin kusurlarını gidermek için çözümler arıyordu.
 
-            // Bir sonraki hikaye bölümünü yükle
-            loadStoryChapter(nextChapterId);
-        }
+        Bir ilkbahar öğleden sonrası, Budapeşte'nin şehir parkında arkadaşı Szigeti ile yürüyüş yaparken, güneşin batışını izlerken sohbet ediyorlardı. Şiir okuyor, hayatın anlamını tartışıyorlardı. Nikola'nın gözleri gökyüzündeki gün batımının kızıl tonlarında gezinirken, bir anda, adeta bir şimşek çakmış gibi, zihninde AC motorun çalışma prensibi tüm detaylarıyla canlandı! Rotorun nasıl kesintisiz ve verimli bir şekilde dönebileceğini, manyetik alanların senkronize dansını net bir şekilde gördü. Her bir sargının nasıl yerleşeceği, akımın nasıl yönlendirileceği... Tamamen kusursuz bir tasarım, sanki gökten zihnine inmişti. Durdu, gözleri faltaşı gibi açılmıştı. Szigeti'ye döndü ve nefes nefese, "Gördüm! Nasıl çalıştığını gördüm!" diye haykırdı. Bu, sadece bir fikir değil, somut bir gerçeklikti artık.`,
+        choices: [
+            {
+                text: "Hemen Budapeşte'de kısıtlı imkanlarla dahi olsa bir prototip yapmaya çalış, bu dehanı somutlaştır.",
+                next: "paris1",
+                effects: { inventionScore: 20, money: -30 }
+            },
+            {
+                text: "Paran yokken prototip yapmak yerine, Amerika'ya gidip Edison'ın şirketinde çalışmak için daha fazla para biriktirerek uygun koşulları bekle.",
+                next: "paris2",
+                effects: { money: 50, fame: 3 }
+            }
+        ]
+    },
+    // Bölüm: Budapeşte 2
+    budapest2: {
+        title: "Budapeşte - Tanınmış Mucit ve Paris'e Yolculuk, 1882",
+        text: `Graz'da AC motor fikrini profesörüne karşı ısrarla savunması, Nikola Tesla'nın Budapeşte'ye geldiğinde artık tanınmış bir isim olmasını sağlamıştı. Onun cesur vizyonu ve bilimsel argümanları, şehrin entelektüel ve iş çevrelerinde kulaktan kulağa yayılmıştı. Kısa sürede, Budapeşte'nin ileri gelenleri, onun dehasının farkına vardı ve bu genç, idealist mucidi desteklemeye başladılar. Tesla, bu destekle birlikte, zihnindeki AC motor tasarımını kağıda dökmeye ve ilk hesaplamalarını yapmaya başladı. Ancak, bu devrim niteliğindeki motoru gerçekten hayata geçirmek için daha fazla kaynağa, daha gelişmiş laboratuvar ekipmanlarına ve daha modern bir teknoloji altyapısına ihtiyacı vardı. Budapeşte'deki imkanlar, onun vizyonunun büyüklüğünü karşılamakta yetersiz kalıyordu.
 
-        /**
-         * Oyun durumunu başlangıç değerlerine sıfırlayan fonksiyon.
-         * Genellikle oyun bittiğinde veya hata durumunda kullanılır.
-         */
-        function resetGame() {
-            currentGameState.inventionScore = 0;
-            currentGameState.money = 100;
-            currentGameState.fame = 5;
-            currentGameState.currentChapterId = 'childhood'; // Başlangıç bölümü
+        Tesla, vizyonunu gerçekleştirebilmek için daha büyük bir sahneye, daha geniş imkanlara ihtiyacı olduğunu anladı. Gözleri, dünyanın o dönemdeki en büyük elektrik şirketlerine ev sahipliği yapan Paris'e çevrildi. Thomas Edison'ın Continental Edison Company'si, Avrupa'daki en büyük ve en donanımlı şirketlerden biriydi. Tesla, Edison'ın DC sistemlerine karşı kendi AC sisteminin potansiyelini biliyordu ve bu şirketin ona aradığı kaynakları ve teknolojiyi sağlayabileceğini düşündü. Bu, hem büyük bir risk hem de büyük bir fırsattı. Kendi bildiği yoldan sapıp, DC akımın en büyük savunucusu Edison'ın kapısını çalacaktı. Ama amacı, kendi dehasını kanıtlamak ve dünyanın elektrikle olan ilişkisini sonsuza dek değiştirecek olan AC motorunu gerçeğe dönüştürmekti. Uzun süren düşüncelerden sonra, Paris'e gitme kararı kesinleşti.`,
+        choices: [
+            {
+                text: "Budapeşte'de destek bulmaya devam et ve yerel imkanlarla AC motor üzerinde çalış, yavaş ama emin adımlarla ilerle.",
+                next: "paris1",
+                effects: { inventionScore: 25, money: 30 }
+            },
+            {
+                text: "Paris'e git ve Thomas Edison'ın Continental Edison Company'sine katıl, daha geniş imkanlarla çalışma fırsatı yakala.",
+                next: "paris2",
+                effects: { fame: 8, money: 20 }
+            }
+        ]
+    },
+    // Bölüm: Paris 1
+    paris1: {
+        title: "Paris - Continental Edison Company, 1883: Fırsatlar ve Hayal Kırıklıkları",
+        text: `Nikola Tesla, Budapeşte'den Paris'e, büyük umutlarla ve AC motorunun mükemmel tasarımını zihninde taşıyarak geldi. Continental Edison Company'de işe başlamak, onun için büyük bir adımdı. Şirket, Avrupa'nın dört bir yanına yayılan devasa bir elektrik altyapısı kuruyordu ve Tesla, bu büyük çarkın bir parçası olmanın heyecanını yaşıyordu. Şirketteki görevi, mevcut doğru akım (DC) sistemlerini kurmak, bakımını yapmak ve iyileştirmekti. Tesla, işini titizlikle yapıyor, her projeye kendi dehasından bir şeyler katıyordu. Ancak, içten içe bir hayal kırıklığı yaşıyordu. Şirket, sadece DC sistemlerle ilgileniyor, onun asıl tutkusu olan alternatif akım (AC) motorlarına ve bu teknolojinin potansiyeline tamamen kayıtsız kalıyordu. Toplantılarda AC fikrini dile getirmeye çalıştığında, genellikle ya görmezden geliniyor ya da küçümseniyordu.
 
-            // Ekranları yeniden düzenle
-            gameScreenElement.classList.add('hidden');
-            startScreenElement.classList.remove('hidden');
+        Bir gün, şirketin en önemli ve en büyük DC jeneratörlerinden biri, nedeni anlaşılamayan bir arıza nedeniyle durdu. Tüm Paris'in elektrik beslemesi aksadı. Şirketin en deneyimli mühendisleri günlerdir tamir edememiş, çaresizce jeneratörün başında bekliyorlardı. Ortamda gergin bir bekleyiş vardı, şirket büyük zarara uğruyordu. Tesla, durumu incelemek için jeneratörün yanına geldi. Kısa bir gözlemden sonra, sorunu hemen tespit etti: Karmaşık kablolama ve bağlantı hatası. Hızlı ve kararlı hareketlerle jeneratörü tamir etmeye başladı. Birkaç saat içinde, daha önce kimsenin çözemediği bu büyük arızayı giderdi ve jeneratör tekrar çalışmaya başladı, şehre yeniden elektrik vermeye başladı. Şirket yöneticileri ve diğer mühendisler, onun bu olağanüstü yeteneğine ve hıza hayran kaldılar. Tesla'nın adı, şirkette hızla duyulmaya başladı.`,
+        choices: [
+            {
+                text: "Bu başarıyı fırsat bilerek, AC motor fikrini doğrudan şirket yöneticilerine sun ve potansiyelini vurgula.",
+                next: "america1",
+                effects: { inventionScore: 15, fame: 10 }
+            },
+            {
+                text: "Şimdilik sessizce çalışmaya devam et, AC motorunu kendi başına geliştirmeyi sürdür ve Amerika'ya gidip daha büyük fırsatlar bulmak için hazırlan.",
+                next: "america2",
+                effects: { money: 80, inventionScore: 10 }
+            }
+        ]
+    },
+    // Bölüm: Paris 2
+    paris2: {
+        title: "Paris - Hızlı Yükseliş ve Büyük Davet, 1883",
+        text: `Nikola Tesla'nın ünü, Budapeşte'den Paris'e kendisinden önce gelmişti. Bilimsel dehası ve özellikle AC motor konusundaki cesur çıkışları, Thomas Edison'ın Avrupa'daki şirketinin yöneticilerinin kulağına kadar ulaşmıştı. Bu sayede, Paris'e adım atar atmaz, Continental Edison Company'de üst düzey bir mühendis olarak işe alındı. Bu, onun kariyerinde olağanüstü hızlı bir yükselişti. Tesla, DC sistemleri konusunda kısa sürede bir uzman haline geldi. Şirketin projelerinde önemli roller üstlendi, karmaşık sorunları kolaylıkla çözüyor, herkesi şaşırtıyordu. Ancak, zihninin derinliklerinde, her zaman AC motorunu geliştirme hayali vardı. Boş zamanlarını bu hayale adıyor, gizlice prototipler üzerinde çalışıyor, hesaplamalarını mükemmelleştiriyordu. DC sistemlerinin aksaklıkları ve sınırlamaları, onun AC'ye olan inancını daha da pekiştiriyordu.
 
-            // İstatistikleri başlangıç değerleriyle güncelle
-            updateGameStats();
-        }
+        Edison'ın kendisi, Atlantik'in ötesinden Tesla'nın olağanüstü yeteneklerini ve Avrupa'daki başarılarını duymaya başlamıştı. Tesla'nın adı, Edison'ın kendi laboratuvarında bile konuşuluyordu. Edison, bu genç ve parlak mühendisi kendi ekibine katmak istiyordu. Bir gün, Tesla'ya doğrudan bir davet mektubu ulaştı. Mektupta, Edison'ın kişisel imzası vardı ve genç mucidi Amerika'ya, kendi yanına davet ediyordu. "Genç adam, senin gibi bir dâhinin Amerika'da çalışması gerek! Burası, hayallerini gerçekleştirebileceğin yer." diyordu Edison. Bu, Tesla için hayatının dönüm noktası olabilecek bir teklifti. Bir yanda Paris'te emin adımlarla ilerleyen kariyeri ve gizlice yürüttüğü AC çalışmaları, diğer yanda dünyanın en büyük mucitlerinden birinin yanında çalışma ve daha büyük imkanlara erişme fırsatı vardı. Karar, hiç de kolay olmayacaktı.`,
+        choices: [
+            {
+                text: "Hemen Thomas Edison'ın Amerika'daki teklifini kabul et, büyük bir şöhret ve daha fazla maddi imkan için yola çık.",
+                next: "america2",
+                effects: { fame: 15, money: 100 }
+            },
+            {
+                text: "Önce Paris'te AC motor prototipini tamamlamaya çalış, buluşunu kendi ülkesinde somutlaştırıp sonra Amerika'ya gitmeyi düşün.",
+                next: "america1",
+                effects: { inventionScore: 30 }
+            }
+        ]
+    },
+    // Bölüm: Amerika 1
+    america1: {
+        title: "Amerika - Edison'la Çalışma ve Büyük Hayal Kırıklığı, 1884",
+        text: `Büyük umutlarla New York'a gelen Nikola Tesla, nihayet çocukluğundan beri adını duyduğu, dünyanın en ünlü mucidi Thomas Edison ile tanıştı. Edison'ın laboratuvarı, adeta bir arı kovanı gibiydi; sürekli yeni icatlar üzerinde çalışılıyor, deneyler yapılıyordu. Edison, Tesla'yı hemen önemli bir projeye atadı: Kendi doğru akım (DC) jeneratörlerini daha verimli hale getirmek. Eğer Tesla bu karmaşık görevi başarabilirse, ona inanılmaz bir miktar, tam 50.000 dolar vaat ettiğini söyledi. Tesla, bu büyük fırsat karşısında heyecanlandı. Haftalarca, hatta aylarca durmadan çalıştı. Edison'ın DC jeneratörlerinin her bir detayını analiz etti, sayısız deneme yaptı, mekanik ve elektriksel iyileştirmelerle sistemlerin verimliliğini muazzam ölçüde artırdı. Sonunda, jeneratörler ilk hallerinden çok daha üstün hale gelmişti. Başarısını Edison'a gururla sundu.
 
-        // Oyun başladığında veya sayfa yüklendiğinde istatistikleri ilk değerleriyle güncelle
-        // Bu, sayfa yenilendiğinde istatistiklerin doğru görünmesini sağlar.
-        updateGameStats();
+        Ancak Tesla'nın beklediği takdir ve vaat edilen ödül gelmedi. Edison, onun başarısını küçümseyen bir tavırla dinledi ve sonra yüzünde alaycı bir gülümsemeyle reddetti: "Tesla, sen Amerika mizahını anlamıyorsun! Bu sadece bir şakaydı. Sen sadece bir maaşlı çalışansın, sana o kadar para ödemem." Bu sözler, Tesla için büyük bir şok ve hayal kırıklığı oldu. Sadece paranın değil, emeğinin ve zekâsının da değersiz görüldüğünü hissetti. Edison'ın pragmatist ve ticari zihniyetiyle, Tesla'nın idealist ve bilimsel tutumu arasındaki derin uçurum, bu olayla net bir şekilde ortaya çıktı. Bir yanda verilen sözler, diğer yanda bilimsel ahlak ve ticari çıkarların çatışması... Tesla'nın önünde iki yol vardı: Ya bu hayal kırıklığını yutup Edison'ın gölgesinde kalmaya devam edecekti, ya da kendi yolunu çizmek için radikal bir karar alacaktı.`,
+        choices: [
+            {
+                text: "Hayal kırıklığına rağmen Edison'ın yanında kalmaya devam et, belki daha sonra farklı bir fırsat doğar.",
+                next: "westinghouse1",
+                effects: { money: 200, fame: -5 }
+            },
+            {
+                text: "Edison'dan hemen istifa et, tüm köprüleri yak ve kendi şirketin için bir temel atmaya çalış.",
+                next: "own_company",
+                effects: { inventionScore: 20, money: -50, fame: 5 }
+            }
+        ]
+    },
+    // Bölüm: Amerika 2
+    america2: {
+        title: "Amerika - Parlak Başlangıç ve Akım Savaşı'nın İlk Belirtileri, 1884",
+        text: `Thomas Edison'ın cazip teklifi üzerine Paris'ten New York'a gelen Nikola Tesla, Edison'ın şirketine yüksek bir ücretle katıldı. Bu, onun için parlak bir başlangıç gibi görünüyordu. Hemen önemli projelere dahil edildi, DC (doğru akım) sistemlerinin geliştirilmesinde kilit roller üstlendi. Laboratuvardaki ekipmanlar ve kaynaklar, Paris'te hayal bile edemeyeceği kadar fazlaydı. Tesla, gündüzleri Edison'ın DC projeleri üzerinde titizlikle çalışırken, geceleri ise kendi gizli projesine odaklanıyordu: Alternatif Akım (AC) motorunun prototipini geliştirmek. Her geçen gün, AC sisteminin DC'ye göre ne kadar üstün olduğunu daha net görüyordu; daha az enerji kaybı, daha uzak mesafelere iletim imkanı... Kendi geliştirdiği prototip, umut vaat ediyordu.
+
+        Ancak Edison'ın gözünden hiçbir şey kaçmıyordu. Tesla'nın gece yarılarına kadar laboratuvarda AC motoru üzerinde çalıştığını ve bu gizli projeyi öğrendi. Edison'ın yüzü öfkeyle kızardı. O, DC akımın tartışmasız savunucusuydu ve AC'yi bir tehdit olarak görüyordu. Tesla'nın yanına gelerek sert bir ses tonuyla, "AC elektrik insanları öldürür! Güvenli değil! Benim DC sistemim ise tamamen güvenlidir ve insanlığa hizmet eder!" diye bağırdı. Bu sözler, henüz başlangıcında olan 'Akımlar Savaşı'nın' ilk işaretleriydi. Edison, AC'nin tehlikeli olduğuna dair bir propaganda başlatmış, kamuoyunu korkutmaya çalışıyordu. Tesla, Edison'ın bu tepkisine şaşırmamıştı ama onun bilimi kendi ticari çıkarları için çarpıtmasına öfkelendi. Şimdi bir yol ayrımındaydı: Ya Edison'ın güçlü gölgesine sığınacak, ya da bilimin ışığında kendi doğrularını savunmak için büyük bir mücadeleye girişecekti.`,
+        choices: [
+            {
+                text: "Edison'ın haklı olduğunu kabul et, DC sistemi üzerinde çalışmaya devam et ve onunla iyi geçinerek gelecekteki fırsatları bekle.",
+                next: "westinghouse1",
+                effects: { money: 300, fame: 10, inventionScore: -10 }
+            },
+            {
+                text: "AC motorun güvenli, verimli ve geleceğin teknolojisi olduğunu kanıtlamaya çalış, Edison'ın propagandasına karşı bilimsel gerçekleri savun.",
+                next: "own_company",
+                effects: { inventionScore: 35, fame: 8 }
+            }
+        ]
+    },
+    // Bölüm: Kendi Şirketi
+    own_company: {
+        title: "Tesla Electric Company, 1885: Sokaktaki Deha ve Hayallerin Peşinde",
+        text: `Edison'ın sözde "mizahı" ve bilimsel ahlakından yoksun tavrı, Nikola Tesla için bardağı taşıran son damla oldu. Hiç düşünmeden istifasını sundu ve 1885 yılında kendi şirketi olan Tesla Electric Company'yi kurdu. Hayali, tüm dünyanın kablosuz elektrikle aydınlandığı bir gelecek yaratmaktı. Ancak bu idealist vizyon, onu destekleyen yatırımcıların ticari kaygılarıyla çatışıyordu. Yatırımcılar, Tesla'nın AC motoru yerine, o dönemde daha popüler ve kârlı olan ark lambaları patent etmesini ve üretmesini istiyorlardı. AC motorun potansiyelini anlamıyor, uzun vadeli bir vizyondan çok kısa vadeli kazançlara odaklanıyorlardı. Tesla, ark lambası üzerinde çalışmayı kabul etti, ancak içten içe kendi asıl hayalini gerçekleştiremediği için acı çekiyordu.
+
+        Beklenen ticari başarı gelmedi, şirket kısa sürede mali sıkıntıya düştü. Yatırımcılar desteğini çekti ve Tesla, elinde hiçbir şey kalmadan, New York sokaklarında beş parasız kaldı. Hayatında ilk kez bu kadar büyük bir çaresizlikle yüzleşiyordu. Eski mühendislik bilgisi ve parlak zekâsı, onu bu zor durumdan kurtarmaya yetmiyordu. Geçimini sağlamak için, limanlarda ve inşaat alanlarında kazma kürekle çalışmaya başladı, günlük yevmiye ile hayatta kalmaya çalıştı. Elleri nasır tutmuş, bedeni yorulmuştu. Ancak bu fiziksel zorluklar, onun zihnindeki AC motor hayalini asla söndüremedi. Her kazma darbesinde, her kürek sallayışında, zihninde dönen manyetik alanların formülleri canlanıyor, fırçasız motorun mükemmel görüntüsü gözlerinin önünden gitmiyordu. Bu hayal, onu ayakta tutan, ona güç veren yegâne şeydi. Zorluklara rağmen, inancından vazgeçmiyordu; çünkü biliyordu ki, bu hayal bir gün gerçeğe dönüşecekti.`,
+        choices: [
+            {
+                text: "AC motor hayalinden vazgeç, ticari olarak daha kârlı olan ark lambası üretimine odaklan ve finansal istikrarını sağla.",
+                next: "westinghouse1",
+                effects: { money: 150, inventionScore: -15 }
+            },
+            {
+                text: "Tüm zorluklara rağmen, kazandığın her kuruşu ve boş zamanını AC motor üzerinde çalışmaya devam etmek için kullan, hayalinden vazgeçme.",
+                next: "westinghouse2",
+                effects: { inventionScore: 40, fame: 15 }
+            }
+        ]
+    },
+    // Bölüm: Westinghouse ile Anlaşma 1
+    westinghouse1: {
+        title: "Westinghouse ile Anlaşma - 1888: Bir Dâhinin Kurtuluşu",
+        text: `Edison'ın gölgesinde kalmaya devam eden Nikola Tesla, AC motor hayalinden asla vazgeçmedi. Her ne kadar ticari başarılar elde etse ve maddi durumu düzelmiş olsa da, zihninin en derinlerinde yatan o devrim niteliğindeki buluşu hayata geçirme arzusu hiç sönmemişti. Bir gün, şans eseri, Pittsburgh'da önemli bir sanayici ve mucit olan George Westinghouse'un dikkatini çekti. Westinghouse, DC sistemlerinin sınırlamalarının farkındaydı ve alternatif bir enerji sistemine yatırım yapmanın gelecekteki önemini sezmişti. Tesla'nın AC motorunun potansiyelini gördüğünde, adeta bir hazine bulmuş gibi hissetti. Tesla'nın laboratuvarını ziyaret etti, motorun akıcı ve verimli çalışmasına tanık oldu.
+
+        Westinghouse, büyük bir vizyonerdi. Edison'ın DC imparatorluğuna karşı, Tesla'nın AC sisteminin tüm dünyaya elektrik sağlayabilecek gücüne inanıyordu. "Bay Tesla," dedi Westinghouse, gözleri parlayarak, "sizin motorunuz elektrik tarihini değiştirecek! Bu sadece bir motor değil, yeni bir çağın başlangıcı!" Kısa sürede, iki dâhi arasında tarihi bir anlaşma imzalandı. Westinghouse, Tesla'nın AC motor patentlerini tam 1 milyon dolar ve üretilen her beygir gücü başına belirli bir telif ücreti karşılığında satın aldı. Bu, o dönem için inanılmaz büyüklükte bir paraydı. Tesla, yıllar süren çabalarının, hayallerinin ve çektiği sıkıntıların nihayet karşılığını bulduğunu gördü. Artık sadece bir mucit değil, aynı zamanda finansal olarak da özgürdü. Önünde, tüm dünyayı aydınlatacak büyük projeler vardı.`,
+        choices: [
+            {
+                text: "Westinghouse ile ortaklığı derinleştir, onun finansal gücü ve endüstriyel altyapısıyla AC sistemini hızla yaygınlaştır.",
+                next: "war_of_currents1",
+                effects: { money: 500, fame: 25, inventionScore: 30 }
+            },
+            {
+                text: "Westinghouse ile yaptığın anlaşmadan elde ettiğin parayla kendi bağımsız laboratuvarını kur ve çalışmalarına tek başına devam et.",
+                next: "war_of_currents2",
+                effects: { inventionScore: 50, fame: 20 }
+            }
+        ]
+    },
+    // Bölüm: Westinghouse'un Keşfi 2
+    westinghouse2: {
+        title: "Westinghouse'un Keşfi - 1888: Dehanın Tanınması ve Büyük Teklif",
+        text: `Kazma kürekle çalıştığı zorlu günlerin ardından, Nikola Tesla'nın azmi ve AC motoruna olan sarsılmaz inancı nihayet meyvesini verdi. Sokakta kalmış, parasız kalmış olsa da, zihnindeki o parlak fikir hiç solmamıştı. Bir şekilde, laboratuvarında küçük ölçekli deneylerine devam ediyor, motorunu daha da mükemmelleştiriyordu. Bir gün, George Westinghouse'un temsilcileri, Tesla'nın geliştirdiği çığır açıcı AC motorunun çalıştığına dair söylentileri duydu. Westinghouse, o dönemde Edison'ın DC imparatorluğuna karşı rekabetçi bir alternatif arayan, vizyon sahibi bir sanayiciydi. Merakı ağır bastı ve bizzat Tesla'nın küçük, derme çatma laboratuvarını ziyaret etti. İçeri girdiğinde, Tesla'nın gösterdiği motorun pürüzsüz ve güçlü çalışmasına tanık oldu.
+
+        Westinghouse, motorun sessiz ve verimli dönüşünü izlerken adeta büyülenmişti. Gözleri parlıyordu. "Bu inanılmaz! Bu motor tüm dünyayı değiştirecek! Edison'ın tüm DC sistemleri bunun yanında bir hiç kalır!" diye haykırdı. Tesla'nın dehasına anında ikna oldu. Edison'ın aksine, Westinghouse, uzun vadeli potansiyeli ve bilimin gücünü görebiliyordu. Tesla'ya hayal bile edemeyeceği büyüklükte bir teklif sundu: Tüm AC motor patentleri için astronomik bir miktar, 1 milyon dolar nakit ve üretilen her beygir gücü için sürekli telif hakkı. Bu, Tesla'nın hayatının akışını tamamen değiştirecek, ona tüm hayallerini gerçekleştirme imkanı sunacak bir teklifti. Yıllarca çektiği sıkıntılar, uğradığı haksızlıklar bir anda anlamsızlaşmıştı. Şimşekler çakan o küçük çocuğun hayali, artık gerçeğe dönüşmek üzereydi.`,
+        choices: [
+            {
+                text: "Westinghouse'un cömert teklifini hemen kabul et, bu finansal gücü arkana alarak AC sistemini hızla hayata geçir.",
+                next: "war_of_currents1",
+                effects: { money: 800, fame: 30, inventionScore: 25 }
+            },
+            {
+                text: "Teklifini takdir et ama daha iyi bir anlaşma için pazarlık yap, patent hakların için daha fazla pay ve kontrol talep et.",
+                next: "war_of_currents2",
+                effects: { money: 1200, fame: 40, inventionScore: 35 }
+            }
+        ]
+    },
+    // Bölüm: Akımlar Savaşı 1
+    war_of_currents1: {
+        title: "Akımlar Savaşı - 1890: Bilim ve Şovmenliğin Çatışması",
+        text: `Nikola Tesla'nın alternatif akım (AC) sistemi, George Westinghouse'un desteğiyle hızla yayılmaya başlayınca, bu durum Thomas Edison'ı paniğe sevk etti. Edison, kendi doğru akım (DC) imparatorluğunun tehdit altında olduğunu hissediyordu. İki dâhi arasındaki rekabet, kısa sürede "Akımlar Savaşı" olarak anılacak acımasız bir mücadeleye dönüştü. Edison, AC'nin tehlikeli olduğunu kanıtlamak ve kamuoyunu kendi tarafına çekmek için her türlü yöntemi denedi. New York'ta halka açık gösteriler düzenledi; AC elektriği kullanarak hayvanları, hatta bir fili bile elektrikle öldürdü. Amacı, AC'nin ölümcül ve kontrol edilemez olduğunu göstermekti. Bu korkunç gösterilerin doruk noktası ise, idam cezasında kullanılmak üzere "elektrikli sandalye"yi icat etmesi ve AC ile çalıştırmasıydı.
+
+        Tesla ise bu karalama kampanyasına bilimle ve kendi hayatıyla cevap verdi. İnsanların AC'nin güvenli olduğuna ikna olmaları için çaresiz bir adım attı. Sahneye çıktı ve yüksek voltajlı, yüksek frekanslı AC akımını kendi vücudundan geçirdi. Ampuller elinde parlarken, kıvılcımlar saçılırken, seyirciler dehşet içinde bu inanılmaz gösteriyi izledi. Tesla, tek bir çizik bile almadan bu deneyden çıktı ve AC'nin kontrol edilebilir ve güvenli olduğunu canlı kanıtıyla gösterdi. Ancak Edison'ın propagandası kolay kolay durmuyordu. Kamuoyunun zihninde AC'nin tehlikeli olduğuna dair şüpheler ekilmişti. Tesla'nın önünde iki seçenek vardı: Ya daha dramatik gösterilerle Edison'a meydan okuyacak, ya da bilimin soğuk, mantıksal gerçekleriyle insanlığı ikna etmeye çalışacaktı.`,
+        choices: [
+            {
+                text: "AC'nin gücünü ve güvenliğini kanıtlamak için daha dramatik, halkı şaşırtacak gösteriler yapmaya devam et.",
+                next: "world_fair1",
+                effects: { fame: 50, inventionScore: 20 }
+            },
+            {
+                text: "Bilimsel konferanslar düzenle, makaleler yayınla ve akademik çevreleri hedef alarak AC'nin üstünlüğünü ve güvenliğini bilimsel yöntemlerle kanıtla.",
+                next: "world_fair2",
+                effects: { inventionScore: 45, fame: 30 }
+            }
+        ]
+    },
+    // Bölüm: Akımlar Savaşı 2
+    war_of_currents2: {
+        title: "Bağımsız Savaş - 1890: Patentlerin Bedeli ve Sadakatin Sınavı",
+        text: `George Westinghouse ile yapılan anlaşma, Nikola Tesla'ya büyük bir finansal özgürlük sağlamıştı. AC motorun patentlerinden düzenli olarak iyi paralar kazanıyordu. Ancak bu, onu Thomas Edison'ın başlattığı "Akımlar Savaşı"nın doğrudan hedefi haline getirmişti. Edison, elindeki tüm medya gücü ve ticari ağıyla AC'ye karşı amansız bir propaganda yürütüyordu. AC'nin tehlikeli, ölümcül ve kullanışsız olduğuna dair sürekli yalanlar yayıyor, kamuoyunu korkutuyordu. Tesla, kendi başına bu devasa propaganda makinesine karşı savaş veriyordu. Bilimsel gerçekleri anlatmaya çalışsa da, Edison'ın şovmenliği ve karanlık taktikleri karşısında zaman zaman zorlanıyordu.
+
+        Bu sırada, hiç beklenmedik bir haber Tesla'ya ulaştı: Westinghouse Electric Company, mali sıkıntı yaşıyordu. Şirketin AC sistemlerine yaptığı büyük yatırımlar ve Edison'ın yoğun rekabeti, Westinghouse'u iflasın eşiğine getirmişti. Westinghouse, Tesla ile yaptığı anlaşmadaki yüksek telif ücretlerini karşılamakta zorlanıyordu. Eğer bu durum devam ederse, şirketin batması kaçınılmazdı. Bu da Tesla'nın AC motorunun yayılmasını engelleyecek, hatta tamamen durduracaktı. Westinghouse, Tesla'dan patent haklarından vazgeçmesini ya da telif ücretlerini düşürmesini talep etmek zorunda kalmıştı. Tesla, bir ikilemle karşı karşıyaydı: Kendi finansal kazancını koruyacak mıydı, yoksa AC elektriğin geleceğini kurtarmak adına büyük bir fedakârlık mı yapacaktı? Bu karar, sadece onun servetini değil, tüm dünyanın elektrikle olan ilişkisini belirleyecekti.`,
+        choices: [
+            {
+                text: "Tüm patent haklarından vazgeçerek Westinghouse'u mali krizden kurtar, bu büyük fedakarlıkla AC'nin yayılmasını sağla.",
+                next: "world_fair2",
+                effects: { fame: 60, money: -800, inventionScore: 30 }
+            },
+            {
+                text: "Patent haklarını koru ve daha iyi bir fiyata başka büyük bir şirkete satmayı dene, Westinghouse'un kaderini umursama.",
+                next: "world_fair1",
+                effects: { money: 2000, fame: -20 }
+            }
+        ]
+    },
+    // Bölüm: Chicago Dünya Fuarı 1
+    world_fair1: {
+        title: "Chicago Dünya Fuarı - 1893: Işıklar Şehri ve Tesla'nın Büyüsü",
+        text: `Akımlar Savaşı'nın en kritik anlarından biri, 1893 yılında Chicago'da düzenlenecek olan Dünya Fuarı'nın aydınlatma ihalesini kimin kazanacağıydı. Thomas Edison DC sistemiyle ihaleye girerken, Westinghouse ve Tesla ise AC sistemleriyle kıyasıya bir rekabete tutuştular. Sonunda, maliyet etkinliği ve teknik üstünlüğü sayesinde, Tesla'nın AC sistemi Chicago Dünya Fuarı'nı aydınlatmak için seçildi. Bu, AC elektriğin ilk büyük zaferiydi! Fuarın açılış gecesi, milyonlarca ampulün aynı anda yanmasıyla şehir adeta bir ışık denizi haline geldi. 200.000'den fazla ampul, Tesla'nın alternatif akımıyla pırıl pırıl parlıyor, fuarın her köşesini aydınlatıyordu. Milyonlarca insan, bu mucizevi manzarayı hayranlıkla izliyordu.
+
+        Tesla, fuarın en çok beklenen etkinliklerinden birinde sahne aldı. Karanlık bir salonda, elinde kablosuz olarak yanan ampullerle dolaşmaya başladı. Gözle görünür hiçbir bağlantı yoktu, ampuller sanki sihirli bir şekilde yanıyordu. Ardından, bir Tesla bobini kullanarak devasa yapay şimşekler yarattı, kıvılcımlar havada dans ediyordu. Kalabalık, gördükleri karşısında çılgına dönmüştü. "Bu adam bir büyücü mü?" fısıltıları kulaktan kulağa yayılıyordu. Tesla, bilim ve teknolojinin büyüsünü herkese göstermişti. Bu gösteriler, sadece bir şov değil, kablosuz enerji transferi ve yüksek frekanslı akımlar üzerine yaptığı çalışmaların bir ön gösterimiydi. Dünyayı kablosuz elektrikle aydınlatma hayali, artık çok daha somut bir hal almıştı.`,
+        choices: [
+            {
+                text: "Bu başarının verdiği ilhamla, tüm enerjini kablosuz elektrik transferi üzerinde çalışmaya yoğunlaştır ve büyük ölçekli deneylere başla.",
+                next: "colorado1",
+                effects: { inventionScore: 60, fame: 70 }
+            },
+            {
+                text: "AC elektriğin yaygınlaştırılmasına odaklan, büyük şehirlere ve endüstrilere AC sistemi kurma projelerini yönet.",
+                next: "niagara",
+                effects: { money: 1000, fame: 50 }
+            }
+        ]
+    },
+    // Bölüm: Bilimin Zaferi 2
+    world_fair2: {
+        title: "Bilimin Zaferi - 1893: Hak Edilen Takdir ve Fedakarlığın Işığı",
+        text: `Chicago Dünya Fuarı'ndaki aydınlatma ihalesinde, Nikola Tesla bilimsel yöntemlerle alternatif akımın (AC) doğru akımdan (DC) çok daha üstün olduğunu kanıtladı. Fuarın her köşesini aydınlatan 200.000 ampul, Tesla'nın AC sisteminin mükemmel çalıştığını gözler önüne serdi. Edison'ın DC sistemi, bu devasa gösterinin yanında tamamen gölgede kalmış, çağın gerisinde olduğu anlaşılmıştı. Bu, 'Akımlar Savaşı'nda AC'nin kesin zaferiydi. Üstelik, Westinghouse'u mali krizden kurtarmak için kendi patent haklarından vazgeçen Tesla, bu büyük fedakarlığıyla tüm dünyanın takdirini kazanmıştı. Artık o, sadece bir mucit değil, aynı zamanda etik değerlere sahip, vizyoner bir bilim insanı olarak tanınıyordu. Parasız kalmış olsa da, şöhreti zirveye ulaşmış, adı dâhiler arasına yazılmıştı.
+
+        Tüm dünyada insanlar, Tesla'nın adını ve icatlarını konuşuyordu. Bilim çevreleri, onun AC motorunun sadece bir başlangıç olduğunu, daha büyük keşiflerin kapısını araladığını biliyordu. Tesla, bu şöhret ve saygıyla birlikte, yeni ufuklara yelken açmaya hazırdı. Elinde parası olmasa da, zihninde sayısız yeni fikir vardı. Kablosuz enerji transferi, X-ışınları, radyo dalgaları... Hepsi onun dâhi zihninde birleşiyordu. Niagara Şelalesi gibi devasa enerji kaynaklarını kullanma potansiyeli, tüm dünyayı dönüştürecek bir gücü barındırıyordu. Şimdi, bu şöhreti ve bilimin zaferini nasıl kullanacağına karar vermesi gerekiyordu: Daha fazla icat peşinde koşarak insanlığa yeni ufuklar mı açacaktı, yoksa mevcut başarılarını daha da büyüterek pratik uygulamalara mı odaklanacaktı?`,
+        choices: [
+            {
+                text: "Şöhretini ve bilimin zaferini yeni icatlar peşinde koşmak için kullan, insanlığa daha önce görülmemiş teknolojiler sun.",
+                next: "colorado2",
+                effects: { inventionScore: 80, fame: 80 }
+            },
+            {
+                text: "Niagara Şelalesi projesine odaklan, AC elektriği endüstriyel boyutta kullanarak toplumsal dönüşüme öncülük et.",
+                next: "niagara",
+                effects: { money: 500, inventionScore: 40 }
+            }
+        ]
+    },
+    // Bölüm: Niagara Şelalesi Projesi
+    niagara: {
+        title: "Niagara Şelalesi Projesi - 1896: Bir Rüyadan Gerçeğe, Dünyayı Aydınlatan Akım",
+        text: `Chicago Dünya Fuarı'ndaki ezici zaferin ardından, Nikola Tesla'nın Alternatif Akım (AC) sistemi, tüm dünyanın dikkatini çekmişti. Özellikle, Niagara Şelalesi'nin muazzam gücünü elektrik enerjisine dönüştürme projesi için AC'nin seçilmesi, bu teknolojinin mutlak üstünlüğünü kanıtladı. Bu, sadece bir mühendislik başarısı değil, aynı zamanda AC elektriğin doğru akım (DC) karşısındaki kesin ve tartışmasız zaferiydi. Şelalenin gürül gürül akan suları, devasa türbinleri döndürüyor, Tesla'nın geliştirdiği jeneratörler ise bu gücü şehirleri aydınlatacak elektrik enerjisine çeviriyordu. İlk kez, dünyanın en büyük doğal enerji kaynaklarından biri, milyonlarca insana ucuz ve güvenli elektrik sağlamak için kullanılıyordu.
+
+        Bu proje, Tesla'nın çocukluk hayallerinden birinin gerçekleşmesiydi. Elektriğin sadece endüstriyel tesislerde değil, her evde, her sokakta, her yerde olabileceğini hayal etmişti. Niagara projesiyle bu hayal gerçek oldu: ucuz, güvenli ve kolayca iletilebilen elektrik, artık herkesin ulaşabileceği bir imkan haline gelmişti. New York'un caddeleri, Tesla'nın akımıyla parlıyor, fabrikalar onun enerjisiyle çalışıyordu. Tesla, bu büyük başarıdan sonra durmak niyetinde değildi. Zihni, sürekli yeni projelerle doluydu. Kablosuz elektrik transferi, uzun mesafeli haberleşme, yeni enerji kaynakları... İnsanlığın geleceğini şekillendirecek daha birçok buluş, onun zihninde filizleniyordu. Şimdi, bu büyük başarının ardından, enerjisini hangi yöne odaklayacağına karar vermesi gerekiyordu.`,
+        choices: [
+            {
+                text: "Niagara'daki başarının verdiği ivmeyle, kablosuz elektrik transferi araştırmalarına hızla başla, enerjiyi kablolar olmadan iletmenin yollarını ara.",
+                next: "colorado1",
+                effects: { inventionScore: 70, fame: 60 }
+            },
+            {
+                text: "Tıbbi alanda çığır açacak yeni icatlar üzerinde yoğunlaş; X-ışınları ve yüksek frekanslı akımlarla insan sağlığına faydalı cihazlar geliştir.",
+                next: "medical",
+                effects: { inventionScore: 50, fame: 45, money: 800 }
+            }
+        ]
+    },
+    // Bölüm: Tıbbi İcatlar
+    medical: {
+        title: "Tıbbi İcatlar - 1898: Bilimin Şifa Dokunuşu ve Gizli Hayaller",
+        text: `Niagara Şelalesi projesindeki başarının ardından, Nikola Tesla'nın dâhiliği artık tıp dünyasının da dikkatini çekmişti. O, sadece elektrikle değil, yaşamın gizemleriyle de ilgiliydi. Yüksek frekanslı akımlar ve X-ışınları üzerine yaptığı deneyler, tıp alanında devrim niteliğinde keşiflere yol açtı. Tesla, ilk X-ray cihazlarını geliştirdi ve kemik yapılarını, hatta vücut içindeki bazı organları bile görüntülemeyi başardı. Bu, modern tıbbi teşhisin temelini oluşturan bir adımdı. Ayrıca, yüksek frekanslı akımların insan vücudu üzerindeki terapötik etkilerini keşfetti. Bu akımların ısıtıcı ve iyileştirici özelliklerini kullanarak, bugün "diyatermi" olarak bilinen tedavi yönteminin ilk prototipini icat etti. Romatizma, kas ağrıları ve çeşitli enfeksiyonların tedavisinde kullanılabilecek cihazlar geliştirdi.
+
+        Tesla'nın tıbbi icatları, binlerce insanın hayatını kurtaracak ve yaşam kalitesini artıracak potansiyele sahipti. Bilimsel camia, onun bu çok yönlü dehasına hayran kalıyordu. Ancak Tesla'nın zihninde, tüm bu başarıların ötesinde bir hayal daha vardı: kablosuz elektrik dünyası. Tıbbi çalışmaları ne kadar önemli olursa olsun, elektriği tüm dünyaya kablosuz olarak, herkese ücretsiz olarak ulaştırma vizyonu, onun için her zaman en büyük tutku olmuştu. Wardenclyffe Kulesi gibi projeler, zihninde şekilleniyordu. Şimdi, bu yolda devam etme ya da tıbbi alandaki başarılarını daha da büyütme arasında bir seçim yapması gerekiyordu. İnsanlığın refahı için hangi yol daha önemliydi?`,
+        choices: [
+            {
+                text: "Tıbbi icatlara ve araştırmalara devam et, insan sağlığına yönelik teknolojileri daha da geliştirerek bu alanda derinleş.",
+                next: "final_medical",
+                effects: { money: 2000, fame: 70, inventionScore: 60 }
+            },
+            {
+                text: "Tıbbi alandaki çalışmalarını bir kenara bırak ve tüm gücünle kablosuz elektrik hayalini takip et, enerjini bu büyük vizyona yönlendir.",
+                next: "colorado2",
+                effects: { inventionScore: 90, fame: 80 }
+            }
+        ]
+    },
+    // Bölüm: Colorado Springs 1
+    colorado1: {
+        title: "Colorado Springs - 1899: Şimşeklerin Dansı ve Kablosuz İletim Deneyleri",
+        text: `Chicago Dünya Fuarı'ndaki büyük başarısı ve kablosuz ampul gösterisi, Nikola Tesla'yı kablosuz elektrik transferi hayaline daha da yaklaştırmıştı. Bu vizyonunu gerçekleştirmek için en uygun yerin, yüksek rakımlı, elektriksel parazitten uzak bir yer olacağına inanıyordu. Bu yüzden, 1899 yılında Colorado Springs'e taşındı ve burada devasa bir laboratuvar kurdu. Bu laboratuvar, adeta bir bilim kalesiydi; içinde Tesla'nın hayallerini gerçeğe dönüştürecek devasa bobinler ve jeneratörler bulunuyordu. Amacı, dünyanın etrafındaki iyonosferi kullanarak enerjiyi kablosuz olarak uzun mesafelere iletmekti. Günler ve geceler boyunca, yüksek voltajlı akımlarla deneyler yaptı.
+
+        Laboratuvarın ortasındaki 60 metre yüksekliğindeki devasa Tesla bobini, Colorado Springs semalarında yapay şimşekler üretmeye başladı. Bu şimşekler o kadar büyüktü ki, kilometrelerce uzaktan görülebiliyordu ve şehre kısa süreli elektrik kesintileri yaşatıyordu. Hatta bir deneme sırasında, tüm Colorado Springs'in elektriği kesildi. Ancak bu kesintilere rağmen Tesla, deneylerinde büyük bir başarıya imza attı: Tam 200 kilometre ötedeki ampulleri, kablosuz olarak yakmayı başardı! Bu, tarihte ilk kez enerjinin bu kadar uzak bir mesafeye kablosuz olarak iletildiğini gösteriyordu. Deneyler sırasında, dünyanın doğal elektrik frekansını da keşfetti ve bu frekansın rezonansı ile tüm dünyayı enerjiyle doldurabileceğini anladı. Bu buluşlar, ona Wardenclyffe Kulesi gibi devasa bir proje için ilham verdi. Ancak bu gücün kontrolü ve ticari potansiyeli, yeni sorunları da beraberinde getirecekti.`,
+        choices: [
+            {
+                text: "Colorado'daki deneyleri daha da genişlet, dünya çapında kablosuz elektrik sistemi kurma vizyonunu hemen hayata geçirmek için harekete geç.",
+                next: "wardenclyffe1",
+                effects: { inventionScore: 100, fame: 90 }
+            },
+            {
+                text: "Daha güvenli ve kontrol edilebilir deneyler yaparak sistemi mükemmelleştir, ticari uygulamalara geçmeden önce teknolojinin olgunlaşmasını bekle.",
+                next: "wardenclyffe2",
+                effects: { inventionScore: 80, money: 500 }
+            }
+        ]
+    },
+    // Bölüm: Colorado Springs 2
+    colorado2: {
+        title: "Colorado Springs - Dâhi İş Başında, 1899: Dünya'nın Sırrı ve Yeni Bir Çağın Şafağı",
+        text: `Finansal zorluklara rağmen, Nikola Tesla'nın kablosuz enerji hayali onu Colorado Springs'e sürüklemişti. Burada, kıt kanaat imkanlarla kendine bir laboratuvar kurdu. Bu laboratuvar, dışarıdan bakıldığında basit görünse de, içinde dünyanın geleceğini değiştirecek deneylere ev sahipliği yapıyordu. Tesla, adeta zamanı unutarak, gece gündüz çalıştı. Yemek yemeyi, uyumayı çoğu zaman ihmal etti. Amacı, elektriği kablosuz olarak, atmosfer ve yerküre aracılığıyla iletmenin yollarını bulmaktı. Yüksek voltajlı bobinler inşa etti, devasa kıvılcımlar yarattı ve atmosferdeki elektrik yükünü inceledi. Bilimsel verileri toplarken, her bir detayı zihnine kazıyordu.
+
+        Bir gece, laboratuvarda tek başına çalışırken, gözleri parladı. Yaptığı ölçümler ve gözlemler sonucunda, dünyanın doğal elektrik frekansını, yani gezegenin kendi titreşimini keşfetti! Bu buluş, onun için bir aydınlanma anı oldu. Anladı ki, bu frekansla rezonansa girerek, tüm dünyaya kablosuz elektrik gönderebilirdi. Tıpkı bir radyo sinyalinin havada yayılması gibi, elektrik enerjisi de kabloya ihtiyaç duymadan milyarlarca insana ulaşabilirdi. Bu, sadece bir enerji transfer yöntemi değil, aynı zamanda dünya genelinde ücretsiz iletişim ve bilgi paylaşımının da kapısını aralayan devrim niteliğinde bir fikirdi. Tesla, keşfinin büyüklüğü karşısında derin bir hayranlık duydu. Şimdi önünde büyük bir karar vardı: Bu çığır açan keşfi hemen dünya ile paylaşacak mıydı, yoksa teknolojiyi daha da mükemmelleştirerek tam anlamıyla kusursuz bir sistem mi yaratacaktı?`,
+        choices: [
+            {
+                text: "Keşfini hemen tüm dünyaya duyur, konferanslar ver ve büyük yatırımcılar bularak bu hayali hızla gerçeğe dönüştür.",
+                next: "wardenclyffe1",
+                effects: { fame: 100, money: 1000 }
+            },
+            {
+                text: "Keşfini şimdilik gizli tut, teknolojini daha da mükemmelleştir, olası zorlukları aşmak için daha fazla araştırma ve geliştirme yap.",
+                next: "wardenclyffe2",
+                effects: { inventionScore: 120, fame: 70 }
+            }
+        ]
+    },
+    // Bölüm: Wardenclyffe Kulesi 1
+    wardenclyffe1: {
+        title: "Wardenclyffe Kulesi - 1901: Bir Hayalin Yükselişi ve Acımasız Gerçekler",
+        text: `Colorado Springs'teki çığır açan keşiflerinin ardından, Nikola Tesla'nın en büyük hayali, tüm dünyaya kablosuz elektrik ve haberleşme sağlayacak devasa bir kule inşa etmekti: Wardenclyffe Kulesi. Bu projenin finansmanı için Amerika'nın en güçlü işadamlarından biri olan J.P. Morgan'ın kapısını çaldı. Morgan, başlangıçta kablosuz haberleşme potansiyelini görerek projeye büyük bir hevesle destek verdi ve yatırım yapmayı kabul etti. Long Island'da, gökyüzüne uzanan bu ikonik kule, kısa sürede inşa edilmeye başlandı. Tesla, adeta çocuk gibi heyecanlıydı; her bir tuğlasında, her bir demirinde hayallerinin yükseldiğini görüyordu. Bu kule, insanlığa ücretsiz ve sınırsız enerji sağlayacak, dünyayı sonsuza dek değiştirecekti.
+
+        Ancak J.P. Morgan'ın finansal desteği, Tesla'nın saf idealizmiyle çatışacaktı. Morgan, Tesla'nın "parasız elektrik" planını öğrendiğinde şok oldu. Onun vizyonu, enerjiyi herkes için erişilebilir kılmaktı, bu da Morgan'ın ticari çıkarlarıyla tamamen ters düşüyordu. Morgan'ın iş modeli, elektriği metalaştırmak ve satarak para kazanmak üzerine kuruluydu. "Eğer herkes bedava elektrik kullanırsa, ben nasıl para kazanacağım? Bu iş modeli işlemez!" diye çıkıştı Morgan. Kısa süre sonra, Morgan tüm finansal desteğini aniden kesti. Wardenclyffe Kulesi, neredeyse tamamlanmış olmasına rağmen, finansman eksikliği nedeniyle durdu. Tesla, bir kez daha vizyonuyla kapitalist gerçekler arasında sıkışıp kalmıştı. Kule, onun bitmemiş hayallerinin bir anıtı olarak gökyüzüne uzanıyordu.`,
+        choices: [
+            {
+                text: "Pes etme! Başka zengin yatırımcılar bulmak için tüm kapıları zorla ve Wardenclyffe projesini ne pahasına olursa olsun tamamla.",
+                next: "final_success",
+                effects: { inventionScore: 150, fame: 120 }
+            },
+            {
+                text: "Projeyi küçült, kablosuz elektrik vizyonundan vazgeçerek sadece radyo iletişimine odaklan ve bu alanda ticari başarı ara.",
+                next: "final_radio",
+                effects: { money: 1500, fame: 80, inventionScore: 70 }
+            }
+        ]
+    },
+    // Bölüm: Wardenclyffe Kulesi 2
+    wardenclyffe2: {
+        title: "Wardenclyffe - Mükemmellik Arayışı ve İhanet, 1901",
+        text: `Nikola Tesla, Colorado Springs'teki olağanüstü keşiflerinin ardından, Wardenclyffe projesini daha dikkatli ve titiz bir şekilde planladı. Teknolojinin her detayını mükemmelleştirmek istiyordu. Kule, sadece kablosuz enerji iletimi için değil, aynı zamanda dünya çapında kablosuz iletişim için de bir merkez olacaktı. Tesla'nın teknolojisi gerçekten de kusursuzdu; tüm dünyaya ücretsiz ve sınırsız enerji sağlayabilecek bir sistem kurmak üzereydi. Ancak, bu kez karşısına çıkan engel, teknik bir sorun değil, insan doğasının açgözlülüğüydü. Yatırımcılar, "parasız elektrik" fikrinden rahatsızdı. Bu sistem, onların ticari modellerini tamamen yıkacak, kâr etme yeteneklerini ortadan kaldıracaktı. Bu yüzden, projenin finansmanı sürekli kesintiye uğradı, vaat edilen fonlar gelmedi.
+
+        Kule, yavaş yavaş yükselirken, Tesla'nın hayali de yavaş yavaş sönmeye yüz tutuyordu. Tam da bu hassas dönemde, İtalyan mucit Guglielmo Marconi, kablosuz telgrafı icat ettiğini duyurdu. En acı olanı ise, Marconi'nin bu başarısını Tesla'nın daha önce aldığı patentler üzerinde inşa etmesi ve birçoğunu çalmasıydı. Dünya, Marconi'yi alkışlıyor, onu radyonun mucidi olarak tanıyordu. Oysa ki asıl öncü Tesla'ydı. Bu durum, Tesla için büyük bir ihanetti. Yıllarını adadığı, hayatını ortaya koyduğu buluşlarının başkaları tarafından sahiplenilmesi, onu derinden yaraladı. Wardenclyffe Kulesi, yarım kalmış bir umut heykeli gibi duruyordu. Şimdi, bu haksızlığa karşı savaşacak mıydı, yoksa vizyonunu her şeye rağmen gerçekleştirmeye mi çalışacaktı?`,
+        choices: [
+            {
+                text: "Marconi'ye karşı uluslararası hukuk mücadelesi ver, patent haklarını geri kazanmak ve adını temize çıkarmak için savaş.",
+                next: "final_legal",
+                effects: { money: 2000, fame: 60, inventionScore: 90 }
+            },
+            {
+                text: "Marconi'nin hırsızlığını boş ver, asıl amacın olan kablosuz elektrik dünyasını kurmaya odaklan ve insanlığa en büyük hediyeni ver.",
+                next: "final_success",
+                effects: { inventionScore: 200, fame: 150 }
+            }
+        ]
+    },
+    // Final Bölümü: Dâhinin Zaferi
+    final_success: {
+        title: "Dâhinin Zaferi - 1905: Ücretsiz Enerji Çağının Başlangıcı",
+        text: `Nikola Tesla, tüm zorluklara, finansal engellere, haksızlıklara ve rakiplerinin acımasız propagandalarına rağmen pes etmedi. İnsanlığa olan inancı ve bilime olan tutkusu, onu ayakta tuttu. Sonunda, kalan tüm gücüyle ve belki de son bir mucizeyle, Long Island'daki Wardenclyffe Kulesi'ni tamamlamayı başardı. O gün, kule gökyüzüne doğru tüm ihtişamıyla yükselirken, Tesla'nın hayatının en büyük hayali gerçek oldu. İlk kez, dünyanın dört bir yanına kablosuz elektrik iletimi başarıyla gerçekleşti! Kulenin tepesinden yayılan enerji, binlerce kilometre uzaktaki ampulleri yakıyor, motorları çalıştırıyordu.
+
+        Tüm dünya, bu inanılmaz başarı karşısında hayranlıkla donup kaldı. Daha önce onu deli sananlar, onun vizyonunu küçümseyenler, şimdi dâhiliğini kabul etmek zorunda kaldılar. Gazeteler manşetlerinde Tesla'nın adını yazıyor, bilim insanları onun buluşunu incelemek için Wardenclyffe'e akın ediyordu. Ücretsiz elektrik çağı resmen başlamıştı! İnsanlık, bu devrim niteliğindeki teknoloji sayesinde yeni bir döneme girdi. Artık köylerden şehirlere, en ücra köşelerden en kalabalık merkezlere kadar herkes enerjiye ulaşabiliyordu. Tesla'nın adı, tarihe altın harflerle yazıldı. Zafer günü, Wardenclyffe Kulesi'nin dibinde, gözleri ufuklara dalmış bir şekilde, "Elektrik, insanlığın ortak mirasıdır! Bu, tüm dünya için bir hediyedir," dedi. Onun fedakarlığı ve vizyonu sayesinde, dünya sonsuza dek değişmişti.`,
+        choices: [
+            {
+                text: "Oyunu Yeniden Başlat - Nikola Tesla'nın hayatını farklı seçimlerle yeniden şekillendir!",
+                next: "childhood", // Oyunu başlangıca sıfırla
+                effects: { inventionScore: 0, money: 100, fame: 5 } // Başlangıç değerlerine dön
+            }
+        ]
+    },
+    // Final Bölümü: Radyo Mucidi
+    final_radio: {
+        title: "Radyo Mucidi - 1907: Kablosuz İletişimin Temelleri",
+        text: `Wardenclyffe projesi, finansal zorluklar ve J.P. Morgan'ın desteğini çekmesi nedeniyle kablosuz enerji transferi vizyonunda sekteye uğramış olsa da, Nikola Tesla pes etmedi. Projeyi küçülterek ve odağını değiştirerek, radyo teknolojisine yöneldi. Onun yıllar önceki patentleri ve deneyleri, kablosuz iletişimde devrim niteliğinde ilerlemeler kaydetmesini sağladı. Wardenclyffe Kulesi, bu kez dünya çapında bir kablosuz haberleşme merkezi olarak hizmet vermeye başladı. Tesla'nın geliştirdiği sistemler, Atlantik ötesi iletişimi mümkün kıldı ve modern radyo teknolojisinin temelini attı. Mors alfabesiyle mesajlar artık kablolara ihtiyaç duymadan dünyanın dört bir yanına iletilebiliyordu.
+
+        Guglielmo Marconi'nin aksine, Tesla radyo teknolojisini ticari bir sır olarak saklamadı. İnsanlığın faydasına olması için tüm bilgi ve patentlerini herkesle paylaştı. Bu sayede, radyo teknolojisi hızla yayıldı, iletişim devrimi yaşandı ve dünya daha küçük bir yer haline geldi. Tesla, "Radyo, insanlığın sesidir," diyerek bu buluşun önemini vurguladı. Belki kablosuz enerji hayali tam olarak gerçekleşmemişti, ancak kablosuz iletişimdeki bu öncü rolüyle insanlığa devasa bir miras bırakmıştı. Gelecek nesiller, onun sayısız patentinden ve araştırmasından faydalanarak kablosuz teknolojileri daha da ileri taşıyacaktı. O, bir kez daha bilimin ışığını yakmış, insanlığın ufkunu genişletmişti.`,
+        choices: [
+            {
+                text: "Oyunu Yeniden Başlat - Nikola Tesla'nın hayatını farklı seçimlerle yeniden şekillendir!",
+                next: "childhood",
+                effects: { inventionScore: 0, money: 100, fame: 5 }
+            }
+        ]
+    },
+    // Final Bölümü: Yasal Mücadele
+    final_legal: {
+        title: "Yasal Mücadeleler - 1910: Adaletin Gecikmiş Zaferi ve Bedeli",
+        text: `Nikola Tesla'nın radyo patentlerinin Guglielmo Marconi tarafından çalınması, Tesla için büyük bir haksızlık ve onur meselesiydi. Dehasının ürünü olan buluşlarının başkaları tarafından sahiplenilmesine seyirci kalamazdı. Bu nedenle, Marconi'ye karşı uzun ve yorucu bir hukuk mücadelesine girişti. Yıllar süren davalar, mahkeme salonlarında geçen günler, sayısız tanıklık ve belge incelemesi... Bu süreç, Tesla'nın hem enerjisini hem de finansal kaynaklarını büyük ölçüde tüketti. Avukatlık ücretleri ve dava masrafları, onu sürekli zorluyordu. Ancak o, adaletine olan inancından vazgeçmedi.
+
+        Nihayet, yıllar sonra, Amerika Birleşik Devletleri Yüksek Mahkemesi, tarihi bir karara imza attı. Mahkeme, radyonun asıl patentlerinin Nikola Tesla'ya ait olduğuna karar verdi! Adalet yerini bulmuştu. Dünya, radyonun gerçek mucidinin Marconi değil, Nikola Tesla olduğunu öğrendi. Bu, Tesla için büyük bir moral zaferiydi. Ancak bu zaferin bedeli ağır olmuştu. Yasal mücadeleler sırasında kaybettiği zaman, enerji ve para, onun kablosuz elektrik hayalini tam anlamıyla gerçekleştirmesine engel oldu. Tesla, hayatının sonlarına doğru inzivaya çekildi, yine de sürekli yeni fikirler üzerinde çalışmaya devam etti. Adı tarihe yazılmıştı, ancak kablosuz elektrik rüyası yarım kalmış, insanlık bu büyük nimetten zamanında faydalanamamıştı.`,
+        choices: [
+            {
+                text: "Oyunu Yeniden Başlat - Nikola Tesla'nın hayatını farklı seçimlerle yeniden şekillendir!",
+                next: "childhood",
+                effects: { inventionScore: 0, money: 100, fame: 5 }
+            }
+        ]
+    },
+    // Final Bölümü: Tıbbi Gelişmeler
+    final_medical: {
+        title: "Tıbbi Gelişmeler ve Huzurlu Yaşam - 1920: İnsanlığa Şifa Veren Mucit",
+        text: `Wardenclyffe projesinin başarısızlığı ve kablosuz elektrik hayalinin tam anlamıyla gerçekleşememesi, Nikola Tesla için büyük bir üzüntü kaynağıydı. Ancak o, dehasını ve enerjisini başka alanlara yönlendirmeyi başardı. Hayatının kalanını, tıp dünyasına yönelik icatlar ve yüksek frekanslı akımlar üzerine derinlemesine çalışarak geçirdi. X-ışınları teknolojisini daha da geliştirdi, cerrahi operasyonlarda ve teşhiste kullanılacak yeni cihazlar tasarladı. Diyatermi cihazını mükemmelleştirerek, yüksek frekanslı akımların vücut dokularını ısıtarak ağrıyı azaltma ve iyileşmeyi hızlandırma potansiyelini gösterdi. Bu sayede, romatizma, sinir hastalıkları ve çeşitli enfeksiyonlarla mücadelede binlerce insanın hayatını kurtardı ve yaşam kalitesini artırdı.
+
+        Tesla, insan sağlığına yaptığı bu paha biçilmez katkılarla tıp dünyasında büyük bir saygı gördü. Bilimsel makaleleri tıp dergilerinde yayımlandı, konferanslarda sıkça konuşmacı olarak yer aldı. Her ne kadar en büyük hayali olan kablosuz elektrik dünyası tam anlamıyla gerçekleşmemiş olsa da, insanlığa yaptığı bu somut ve elle tutulur faydalarla huzurlu bir yaşam sürdü. Son yıllarını, otel odasında güvercinleriyle vakit geçirerek ve yeni teoriler üzerinde çalışarak geçirdi. Dünya onu, "insanlığa şifa veren dâhi" olarak hatırlayacaktı. Onun bilimsel mirası, tıp teknolojilerinin gelişiminde önemli bir rol oynamaya devam edecekti.`,
+        choices: [
+            {
+                text: "Oyunu Yeniden Başlat - Nikola Tesla'nın hayatını farklı seçimlerle yeniden şekillendir!",
+                next: "childhood",
+                effects: { inventionScore: 0, money: 100, fame: 5 }
+            }
+        ]
+    }
+    // Gelecekte eklenebilecek daha fazla bölüm buraya gelebilir.
+};
+
+// DOM elemanlarına referanslar
+const startScreenElement = document.getElementById('start-screen');
+const gameScreenElement = document.getElementById('game-screen');
+const storyContentElement = document.getElementById('story-content');
+const choicesContainerElement = document.getElementById('choices-container');
+const inventionScoreElement = document.getElementById('invention-score');
+const moneyElement = document.getElementById('money');
+const fameElement = document.getElementById('fame');
+
+/**
+ * Oyunu başlatan ana fonksiyon.
+ * Başlangıç ekranını gizler ve oyun ekranını gösterir.
+ * Ardından ilk hikaye bölümünü yükler.
+ */
+function startGame() {
+    // Başlangıç ekranını gizle
+    startScreenElement.classList.add('hidden');
+    // Oyun ekranını göster
+    gameScreenElement.classList.remove('hidden');
+    // İlk bölümü yükle (currentChapterId 'childhood' olarak ayarlanmıştı)
+    loadStoryChapter(currentGameState.currentChapterId);
+}
+
+/**
+ * İstatistikleri güncelleyen yardımcı fonksiyon.
+ * currentGameState nesnesindeki değerleri alarak HTML'deki ilgili yerlere yazar.
+ */
+function updateGameStats() {
+    inventionScoreElement.textContent = currentGameState.inventionScore;
+    moneyElement.textContent = currentGameState.money;
+    fameElement.textContent = currentGameState.fame;
+}
+
+/**
+ * Belirli bir hikaye bölümünü yükleyen fonksiyon.
+ * @param {string} chapterId Yüklenecek bölümün ID'si (örneğin 'childhood').
+ */
+function loadStoryChapter(chapterId) {
+    // currentGameState içindeki mevcut bölümü güncelle
+    currentGameState.currentChapterId = chapterId;
+    // Yüklenecek bölüm verilerini allStoryChapters objesinden al
+    const chapterData = allStoryChapters[chapterId];
+
+    // Eğer bölüm bulunamazsa, hata mesajı göster ve oyunu yeniden başlat.
+    if (!chapterData) {
+        console.error("Hata: Bölüm bulunamadı! ID:", chapterId);
+        alert("Oyun hatası oluştu, oyun yeniden başlatılıyor.");
+        resetGame();
+        return;
+    }
+
+    // Hikaye içeriğini ve seçenekleri temizle
+    storyContentElement.innerHTML = `<h2>${chapterData.title}</h2><p>${chapterData.text}</p>`;
+    choicesContainerElement.innerHTML = '';
+
+    // Her bir seçim için buton oluştur ve ekle
+    chapterData.choices.forEach(choice => {
+        const choiceButton = document.createElement('button');
+        choiceButton.classList.add('choice-btn');
+        choiceButton.textContent = choice.text;
+        // Butona tıklama olay dinleyicisi ekle
+        choiceButton.onclick = () => handlePlayerChoice(choice.next, choice.effects);
+        choicesContainerElement.appendChild(choiceButton);
+    });
+
+    // İstatistikleri güncelle
+    updateGameStats();
+}
+
+/**
+ * Oyuncunun bir seçim yaptığında çağrılan fonksiyon.
+ * Seçimin etkilerini uygular ve bir sonraki bölümü yükler.
+ * @param {string} nextChapterId Bir sonraki bölümün ID'si.
+ * @param {object} effects Seçimin oyun durumuna etkileri (inventionScore, money, fame).
+ */
+function handlePlayerChoice(nextChapterId, effects) {
+    // Eğer etkiler varsa, bunları mevcut oyun durumuna ekle
+    if (effects) {
+        currentGameState.inventionScore += (effects.inventionScore || 0);
+        currentGameState.money += (effects.money || 0);
+        currentGameState.fame += (effects.fame || 0);
+    }
+
+    // Bir sonraki hikaye bölümünü yükle
+    loadStoryChapter(nextChapterId);
+}
+
+/**
+ * Oyun durumunu başlangıç değerlerine sıfırlayan fonksiyon.
+ * Genellikle oyun bittiğinde veya hata durumunda kullanılır.
+ */
+function resetGame() {
+    currentGameState.inventionScore = 0;
+    currentGameState.money = 100;
+    currentGameState.fame = 5;
+    currentGameState.currentChapterId = 'childhood'; // Başlangıç bölümü
+
+    // Ekranları yeniden düzenle
+    gameScreenElement.classList.add('hidden');
+    startScreenElement.classList.remove('hidden');
+
+    // İstatistikleri başlangıç değerleriyle güncelle
+    updateGameStats();
+}
+
+// Oyun başladığında veya sayfa yüklendiğinde istatistikleri ilk değerleriyle güncelle
+// Bu, sayfa yenilendiğinde istatistiklerin doğru görünmesini sağlar.
+updateGameStats();
     </script>
 </body>
 </html>
