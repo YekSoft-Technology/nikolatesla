@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nikola Tesla: Elektriğin Dâhisi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000;
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid #ff0000;
+            padding: 30px;
+            background-color: #111;
+        }
+        
+        .title {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .credits {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .story-text {
+            font-size: 1.3em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .choice-btn {
+            background-color: #000;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .choice-btn:hover {
+            background-color: #ff0000;
+            color: #000;
+            text-shadow: none;
+        }
+        
+        .start-btn {
+            background-color: #ff0000;
+            color: #000;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .start-btn:hover {
+            background-color: #fff;
+            transform: scale(1.05);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #111;
+            border: 1px solid #ff0000;
+            padding: 15px;
+            font-size: 0.9em;
+        }
+        
+        .lightning {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2em;
+            animation: flicker 2s infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="lightning">⚡</div>
+    
+    <div id="start-screen" class="game-container">
+        <h1 class="title">NİKOLA TESLA</h1>
+        <h2 style="font-size: 1.5em; margin-bottom: 30px;">ELEKTRİĞİN DÂHİSİ</h2>
+        
+        <div class="credits">
+            <p><strong>Geliştirici:</strong> Yek Soft Company</p>
+            <p><strong>Kurgu:</strong> Yekta Demirkol</p>
+            <p><strong>Geliştirici:</strong> Yekta Demirkol</p>
+        </div>
+        
+        <p style="font-size: 1.1em; margin: 30px 0;">
+            Elektriğin gücünü keşfeden dâhinin hayat hikâyesini yaşayın.<br>
+            Her seçiminiz Tesla'nın kaderini değiştirebilir...
+        </p>
+        
+        <button class="start-btn" onclick="startGame()">OYUNU BAŞLAT</button>
+    </div>
+    
+    <div id="game-screen" class="game-container hidden">
+        <div class="stats">
+            <div>İcat Puanı: <span id="invention-score">0</span></div>
+            <div>Para: <span id="money">100</span>$</div>
+            <div>Şöhret: <span id="fame">5</span></div>
+        </div>
+        
+        <div id="story-content" class="story-text"></div>
+        <div id="choices-container" class="choices"></div>
+    </div>
+
+    <script>
+        let gameState = {
+            inventionScore: 0,
+            money: 100,
+            fame: 5,
+            currentChapter: 'childhood'
+        };
+
+        const chapters = {
+            childhood: {
+                title: "Çocukluk - Smiljan, 1856",
+                text: `Küçük Nikola Tesla, Sırbistan'ın Smiljan köyünde doğdu. Babası Milutin Tesla bir Ortodoks papazı, annesi Đuka ise ev aletleri icat eden yetenekli bir kadındı. 
+                
+Nikola henüz çocukken elektrik çarpması geçirdi ve bu olay onu elektriğe karşı hem korkuttu hem de büyüledi. Parlak zekâsı ve sıra dışı hafızası öğretmenlerini şaşırtıyordu.`,
+                choices: [
+                    {
+                        text: "Annenin icatlarını inceleyip ona yardım et",
+                        next: "education1",
+                        effects: { inventionScore: 5, fame: 2 }
+                    },
+                    {
+                        text: "Elektrikle daha fazla deney yapmaya odaklan",
+                        next: "education2", 
+                        effects: { inventionScore: 8, fame: 1 }
+                    }
+                ]
+            },
+
+            education1: {
+                title: "Eğitim Yılları - Graz, 1875",
+                text: `Annenin icatlarından ilham alan Tesla, Graz Teknik Üniversitesi'nde mühendislik okumaya başladı. Ancak profesörü DC motorları gösterirken, Tesla bunların verimsiz olduğunu ve AC motorların daha iyi olacağını söyledi.
+                
+Profesörü onu sınıfın önünde aşağıladı: "Bay Tesla, böyle bir motor asla çalışmaz!"`,
+                choices: [
+                    {
+                        text: "Profesöre saygı göster ve konuyu kapat",
+                        next: "budapest1",
+                        effects: { money: 20, fame: -1 }
+                    },
+                    {
+                        text: "Israrla AC motorun mümkün olduğunu savun",
+                        next: "budapest2",
+                        effects: { inventionScore: 10, fame: 3, money: -10 }
+                    }
+                ]
+            },
+
+            education2: {
+                title: "Elektrik Deneyleri - Graz, 1875",
+                text: `Elektriğe odaklanan Tesla, üniversitede her gün 20 saat çalışıyordu. DC motorları inceledi ve bunların fırçalı yapısının sürekli kıvılcım çıkardığını fark etti.
+                
+Bir gece laboratuvarda çalışırken, dönen manyetik alan fikrini keşfetti. Bu AC motorun temelini oluşturan devrim niteliğindeki bir buluştu!`,
+                choices: [
+                    {
+                        text: "Fikrini hemen profesörünle paylaş",
+                        next: "budapest2",
+                        effects: { inventionScore: 12, fame: 5 }
+                    },
+                    {
+                        text: "Önce daha fazla araştır ve geliştir",
+                        next: "budapest1",
+                        effects: { inventionScore: 15, money: 10 }
+                    }
+                ]
+            },
+
+            budapest1: {
+                title: "Budapeşte - İlk İş, 1882",
+                text: `Tesla Budapeşte'de Macar Posta ve Telgraf İdaresi'nde çalışmaya başladı. Burada telefon santrali kurdu ve birçok teknik iyileştirme yaptı.
+                
+Bir gün parkta yürürken, aniden AC motorun nasıl çalışacağını tam olarak gördü! Kafasında mükemmel bir tasarım belirmişti.`,
+                choices: [
+                    {
+                        text: "Hemen bir prototip yapmaya çalış",
+                        next: "paris1",
+                        effects: { inventionScore: 20, money: -30 }
+                    },
+                    {
+                        text: "Amerika'ya gidip Edison'la çalışmak için para biriktir",
+                        next: "paris2",
+                        effects: { money: 50, fame: 3 }
+                    }
+                ]
+            },
+
+            budapest2: {
+                title: "Budapeşte - Tanınmış Mucit, 1882",
+                text: `AC motor fikrini paylaştıktan sonra Tesla, Budapeşte'de tanınmış bir mucit oldu. Şehrin ileri gelenleri onu desteklemeye başladı.
+                
+Ancak AC motorunu gerçekten yapmak için daha fazla kaynak ve teknolojiye ihtiyacı vardı. Paris'te Edison'ın şirketi bu imkânları sağlayabilirdi.`,
+                choices: [
+                    {
+                        text: "Budapeşte'de destek bulup motor üzerinde çalış",
+                        next: "paris1",
+                        effects: { inventionScore: 25, money: 30 }
+                    },
+                    {
+                        text: "Paris'e git ve Edison'ın şirketine katıl",
+                        next: "paris2",
+                        effects: { fame: 8, money: 20 }
+                    }
+                ]
+            },
+
+            paris1: {
+                title: "Paris - Continental Edison Company, 1883",
+                text: `Tesla Paris'te Edison'ın Avrupa şirketinde çalışmaya başladı. AC motor tasarımını geliştirmeye devam etti ancak şirket sadece DC sistemlerle ilgileniyordu.
+                
+Bir gün önemli bir DC jeneratörü arızalandı ve kimse tamir edemiyordu. Tesla sorunu hemen çözdü ve yöneticiler çok etkilendi.`,
+                choices: [
+                    {
+                        text: "AC motor fikrini şirket yöneticilerine sun",
+                        next: "america1",
+                        effects: { inventionScore: 15, fame: 10 }
+                    },
+                    {
+                        text: "Sessizce çalış ve Amerika'ya gitmek için hazırlan",
+                        next: "america2",
+                        effects: { money: 80, inventionScore: 10 }
+                    }
+                ]
+            },
+
+            paris2: {
+                title: "Paris - Hızlı Yükseliş, 1883",
+                text: `Şöhretiyle Paris'e gelen Tesla, hemen Edison şirketinin üst düzey mühendisi oldu. DC sistemleri konusunda uzmanlaştı ancak AC motorunu geliştirme hayali hiç aklından çıkmıyordu.
+                
+Edison'ın kendisi Tesla'nın yeteneklerini duydu ve onu Amerika'ya davet etti: "Genç adam, senin gibi bir dâhinin Amerika'da çalışması gerek!"`,
+                choices: [
+                    {
+                        text: "Hemen Edison'ın teklifini kabul et",
+                        next: "america2",
+                        effects: { fame: 15, money: 100 }
+                    },
+                    {
+                        text: "Önce Paris'te AC motorunu tamamlamaya çalış",
+                        next: "america1",
+                        effects: { inventionScore: 30 }
+                    }
+                ]
+            },
+
+            america1: {
+                title: "Amerika - Edison'la Çalışma, 1884",
+                text: `Tesla New York'a geldi ve Edison'la çalışmaya başladı. Edison ona DC jeneratörlerini iyileştirmesi için büyük bir proje verdi ve başarı karşılığında 50,000 dolar vaat etti.
+                
+Tesla aylar boyunca çalıştı ve jeneratörleri büyük ölçüde geliştirdi. Ancak Edison ödemeyi reddetti: "Tesla, sen Amerika mizahını anlamıyorsun!"`,
+                choices: [
+                    {
+                        text: "Edison'ın yanında kalmaya devam et",
+                        next: "westinghouse1",
+                        effects: { money: 200, fame: -5 }
+                    },
+                    {
+                        text: "Hemen istifa et ve kendi şirketini kur",
+                        next: "own_company",
+                        effects: { inventionScore: 20, money: -50, fame: 5 }
+                    }
+                ]
+            },
+
+            america2: {
+                title: "Amerika - Parlak Başlangıç, 1884",
+                text: `Yüksek ücretle Edison'ın şirketine katılan Tesla, hemen önemli projeler üzerinde çalışmaya başladı. DC sistemlerini iyileştirirken, gizlice AC motor prototipi de yapıyordu.
+                
+Edison Tesla'nın AC çalışmalarını öğrendi ve çok kızdı: "AC elektrik insanları öldürür! Benim DC sistemim güvenlidir!"`,
+                choices: [
+                    {
+                        text: "Edison haklı, DC sistemi üzerinde çalış",
+                        next: "westinghouse1",
+                        effects: { money: 300, fame: 10, inventionScore: -10 }
+                    },
+                    {
+                        text: "AC motorun güvenli olduğunu kanıtlamaya çalış",
+                        next: "own_company",
+                        effects: { inventionScore: 35, fame: 8 }
+                    }
+                ]
+            },
+
+            own_company: {
+                title: "Tesla Electric Company, 1885",
+                text: `Tesla kendi şirketini kurdu ancak destekçileri sadece ark lambası patent etmesini istiyordu. AC motor konusunda ilgisizlerdi.
+                
+Para bittiğinde Tesla sokakta kaldı ve geçimini kazma kürekle çalışarak sağladı. Ancak AC motor hayali onu yaşatıyordu.`,
+                choices: [
+                    {
+                        text: "AC motorundan vazgeç ve ark lambasına odaklan",
+                        next: "westinghouse1",
+                        effects: { money: 150, inventionScore: -15 }
+                    },
+                    {
+                        text: "Zorluklara rağmen AC motor üzerinde çalışmaya devam et",
+                        next: "westinghouse2",
+                        effects: { inventionScore: 40, fame: 15 }
+                    }
+                ]
+            },
+
+            westinghouse1: {
+                title: "Westinghouse ile Anlaşma - 1888",
+                text: `AC motor hayalinden vazgeçmeyen Tesla, nihayet George Westinghouse'u ikna etti. Westinghouse AC motorun potansiyelini gördü ve Tesla'nın patentlerini satın aldı.
+                
+"Bay Tesla, sizin motorunuz elektrik tarihini değiştirecek!" dedi Westinghouse ve 1 milyon dolarlık anlaşma imzaladılar.`,
+                choices: [
+                    {
+                        text: "Westinghouse ile ortaklığı derinleştir",
+                        next: "war_of_currents1",
+                        effects: { money: 500, fame: 25, inventionScore: 30 }
+                    },
+                    {
+                        text: "Bağımsız çalışmaya devam et",
+                        next: "war_of_currents2",
+                        effects: { inventionScore: 50, fame: 20 }
+                    }
+                ]
+            },
+
+            westinghouse2: {
+                title: "Westinghouse'un Keşfi - 1888",
+                text: `Zorluklarla mücadele eden Tesla'nın AC motoru nihayet Westinghouse'un dikkatini çekti. Westinghouse Tesla'nın laboratuvarını ziyaret etti ve motorun çalıştığını gördü.
+                
+"Bu inanılmaz! Bu motor tüm dünyayı değiştirecek!" diye haykırdı Westinghouse. Tesla'ya çok büyük bir teklif yaptı.`,
+                choices: [
+                    {
+                        text: "Westinghouse'un teklifini kabul et",
+                        next: "war_of_currents1",
+                        effects: { money: 800, fame: 30, inventionScore: 25 }
+                    },
+                    {
+                        text: "Daha iyi bir anlaşma için pazarlık yap",
+                        next: "war_of_currents2",
+                        effects: { money: 1200, fame: 40, inventionScore: 35 }
+                    }
+                ]
+            },
+
+            war_of_currents1: {
+                title: "Akımlar Savaşı - 1890",
+                text: `Edison ve Tesla arasında 'Akımlar Savaşı' başladı. Edison AC'nin tehlikeli olduğunu göstermek için fil elektrikle öldürdü ve elektrikli sandalye icat etti.
+                
+Tesla ise AC'nin güvenli olduğunu kanıtlamak için kendi vücudundan yüksek voltajlı AC akım geçirdi. Seyirciler dehşet içinde izledi!`,
+                choices: [
+                    {
+                        text: "Daha dramatik gösteriler yap",
+                        next: "world_fair1",
+                        effects: { fame: 50, inventionScore: 20 }
+                    },
+                    {
+                        text: "Bilimsel yöntemlerle AC'nin üstünlüğünü kanıtla",
+                        next: "world_fair2",
+                        effects: { inventionScore: 45, fame: 30 }
+                    }
+                ]
+            },
+
+            war_of_currents2: {
+                title: "Bağımsız Savaş - 1890",
+                text: `Tesla kendi başına Edison'a karşı savaş veriyordu. AC motorun patentlerinden iyi para kazanıyor ancak Edison'ın propagandasına karşı durmak zorlaşıyordu.
+                
+Bir gün Tesla, Westinghouse'un mali durumunun kötü olduğunu öğrendi. Patent ücretlerinden vazgeçmesi gerekebilirdi.`,
+                choices: [
+                    {
+                        text: "Patent haklarından vazgeç ve Westinghouse'u kurtar",
+                        next: "world_fair2",
+                        effects: { fame: 60, money: -800, inventionScore: 30 }
+                    },
+                    {
+                        text: "Patent haklarını başka şirkete sat",
+                        next: "world_fair1",
+                        effects: { money: 2000, fame: -20 }
+                    }
+                ]
+            },
+
+            world_fair1: {
+                title: "Chicago Dünya Fuarı - 1893",
+                text: `Tesla'nın AC sistemi Chicago Dünya Fuarı'nı aydınlatmak için seçildi. 200,000 ampul AC elektrikle yanıyordu ve milyonlarca insan bu mucizeyi görüyordu.
+                
+Tesla sahne aldı ve elinde tuttuğu ampulleri kablosuz olarak yakmaya başladı. Kalabalık çılgına döndü: "Bu adam bir büyücü mü?"`,
+                choices: [
+                    {
+                        text: "Kablosuz elektrik üzerinde çalışmaya yoğunlaş",
+                        next: "colorado1",
+                        effects: { inventionScore: 60, fame: 70 }
+                    },
+                    {
+                        text: "AC elektriği yaygınlaştırmaya odaklan",
+                        next: "niagara",
+                        effects: { money: 1000, fame: 50 }
+                    }
+                ]
+            },
+
+            world_fair2: {
+                title: "Bilimin Zaferi - 1893",
+                text: `Tesla bilimsel yöntemlerle AC'nin üstünlüğünü kanıtladı. Chicago Dünya Fuarı'ndaki AC sistemi mükemmel çalıştı ve Edison'ın DC sistemi tamamen gölgede kaldı.
+                
+Westinghouse'u kurtarmak için patent haklarından vazgeçen Tesla, artık dünyanın en tanınmış mucidiydi. Parasız ama şöhretliydi.`,
+                choices: [
+                    {
+                        text: "Yeni icatlar peşinde koş",
+                        next: "colorado2",
+                        effects: { inventionScore: 80, fame: 80 }
+                    },
+                    {
+                        text: "Niagara projesine odaklan",
+                        next: "niagara",
+                        effects: { money: 500, inventionScore: 40 }
+                    }
+                ]
+            },
+
+            niagara: {
+                title: "Niagara Şelalesi Projesi - 1896",
+                text: `Tesla'nın AC sistemi Niagara Şelalesi'nden elektrik üretmek için seçildi. Bu, AC elektriğin DC'ye karşı kesin zaferiydi.
+                
+İlk kez bir şelale gücü şehirleri aydınlatmak için kullanılıyordu. Tesla'nın hayali gerçek olmuştu: ucuz, güvenli elektrik herkes için!`,
+                choices: [
+                    {
+                        text: "Kablosuz elektrik transferi araştırmalarına başla",
+                        next: "colorado1",
+                        effects: { inventionScore: 70, fame: 60 }
+                    },
+                    {
+                        text: "X-ışınları ve tıbbi cihazlar geliştir",
+                        next: "medical",
+                        effects: { inventionScore: 50, fame: 45, money: 800 }
+                    }
+                ]
+            },
+
+            medical: {
+                title: "Tıbbi İcatlar - 1898",
+                text: `Tesla X-ışınlarıyla deneyler yaptı ve ilk X-ray cihazlarını geliştirdi. Ayrıca yüksek frekanslı akımların tıbbi faydalarını keşfetti.
+                
+Diyatermi cihazı icat etti ve bu modern tıbbın temelini oluşturdu. Ancak Tesla'nın asıl hayali kablosuz elektrik dünyasıydı.`,
+                choices: [
+                    {
+                        text: "Tıbbi icatlara devam et",
+                        next: "final_medical",
+                        effects: { money: 2000, fame: 70, inventionScore: 60 }
+                    },
+                    {
+                        text: "Kablosuz elektrik hayalini takip et",
+                        next: "colorado2",
+                        effects: { inventionScore: 90, fame: 80 }
+                    }
+                ]
+            },
+
+            colorado1: {
+                title: "Colorado Springs - 1899",
+                text: `Tesla Colorado Springs'e gitti ve dev bir laboratuvar kurdu. Amacı kablosuz elektrik iletimi deneyleriydi.
+                
+60 metre yükseklikteki bobin ile yapay şimşekler üretti. Tüm şehrin elektriği kesildi ama Tesla 200 kilometre ötedeki ampulleri kablosuz yakmayı başardı!`,
+                choices: [
+                    {
+                        text: "Deneyleri genişlet ve dünya çapında kablosuz elektrik sistemi kur",
+                        next: "wardenclyffe1",
+                        effects: { inventionScore: 100, fame: 90 }
+                    },
+                    {
+                        text: "Daha güvenli deneyler yaparak sistemi mükemmelleştir",
+                        next: "wardenclyffe2",
+                        effects: { inventionScore: 80, money: 500 }
+                    }
+                ]
+            },
+
+            colorado2: {
+                title: "Colorado Springs - Dâhi İş Başında, 1899",
+                text: `Parasızlığa rağmen Colorado'ya giden Tesla, büyük fedakârlıklarla laboratuvarını kurdu. Gece gündüz çalışarak kablosuz elektrik iletimini çözmeye çalıştı.
+                
+Bir gece, dünyanın doğal elektrik frekansını keşfetti. Bu buluş ile tüm dünyaya kablosuz elektrik gönderebileceğini anladı!`,
+                choices: [
+                    {
+                        text: "Keşfini hemen duyur ve yatırımcı ara",
+                        next: "wardenclyffe1",
+                        effects: { fame: 100, money: 1000 }
+                    },
+                    {
+                        text: "Önce teknolojini mükemmelleştir",
+                        next = "wardenclyffe2",
+                        effects: { inventionScore: 120, fame: 70 }
+                    }
+                ]
+            },
+
+            wardenclyffe1: {
+                title: "Wardenclyffe Kulesi - 1901",
+                text: `J.P. Morgan'ın desteğiyle Tesla Long Island'da Wardenclyffe Kulesi'ni inşa etmeye başladı. Bu kule dünya çapında kablosuz elektrik ve haberleşme sağlayacaktı.
+                
+Ancak Morgan, Tesla'nın parasız elektrik planını öğrenince desteğini çekti: "Eğer herkes bedava elektrik kullanırsa, ben nasıl para kazanacağım?"`,
+                choices: [
+                    {
+                        text: "Başka yatırımcılar bul ve projeyi tamamla",
+                        next: "final_success",
+                        effects: { inventionScore: 150, fame: 120 }
+                    },
+                    {
+                        text: "Projeyi küçült ve radyo iletişimine odaklan",
+                        next: "final_radio",
+                        effects: { money: 1500, fame: 80, inventionScore: 70 }
+                    }
+                ]
+            },
+
+            wardenclyffe2: {
+                title: "Wardenclyffe - Mükemmellik Arayışı, 1901",
+                text: `Tesla Wardenclyffe projesini daha dikkatli planladı. Teknolojisi mükemmeldi ancak yatırımcılar parasız elektrik fikrinden rahatsızdı.
+                
+Kule neredeyse tamamlandığında, Marconi kablosuz telgrafı buldu ve Tesla'nın patent haklarını çaldı. Dünya Marconi'yi alkışladı.`,
+                choices: [
+                    {
+                        text: "Marconi'ye karşı hukuk mücadelesi ver",
+                        next: "final_legal",
+                        effects: { money: 2000, fame: 60, inventionScore: 90 }
+                    },
+                    {
+                        text: "Marconi'yi boş ver ve kablosuz elektrik dünyasını kur",
+                        next: "final_success",
+                        effects: { inventionScore: 200, fame: 150 }
+                    }
+                ]
+            },
+
+            final_success: {
+                title: "Dâhinin Zaferi - 1905",
+                text: `Tesla tüm zorluklara rağmen Wardenclyffe Kulesi'ni tamamladı. İlk kez dünya çapında kablosuz elektrik iletimi başarıyla gerçekleşti!
+                
+Tüm dünya Tesla'nın dâhiliğini kabul etti. Ücretsiz elektrik çağı başladı ve insanlık yeni bir döneme girdi. Tesla'nın adı tarihe altın harflerle yazıldı.
+                
+"Elektrik, insanlığın ortak mirasıdır!" dedi Tesla zafer günü.`,
+                choices: [
+                    {
+                        text: "Oyunu Yeniden Başlat",
+                        next: "childhood",
+                        effects: { inventionScore: 0, money: 100, fame: 5 }
+                    }
+                ]
+            },
+
+            final_radio: {
+                title: "Radyo Mucidi - 1907",
+                text: `Tesla radyo teknolojisine odaklandı ve modern haberleşmenin temellerini attı. Wardenclyffe kablosuz haberleşme merkezi olarak hizmet verdi.
+                
+Marconi'nin aksine Tesla, radyo teknolojisini herkesle paylaştı. Bu sayede teknoloji hız
