@@ -175,7 +175,97 @@ let currentGameState = {
     fame: 5,           // Oyuncunun şöhret seviyesi
     currentChapterId: 'childhood' // Oyuncunun şu anki hikaye bölümünün ID'si
 };
+// HTML elemanlarını seçme (Bunların HTML'de tanımlı olduğunu varsayıyoruz)
+const startButton = document.getElementById('start-button');
+const gameArea = document.getElementById('game-area'); // Oyunun genel kapsayıcısı
+const storyContentDiv = document.getElementById('story-content'); // Hikaye içeriğini gösteren div
+const chapterTitleElement = document.getElementById('chapter-title');
+const chapterTextElement = document.getElementById('chapter-text');
+const choicesDiv = document.getElementById('choices');
+const statsDiv = document.getElementById('stats'); // İstatistikleri gösteren div
+const inventionScoreElement = document.getElementById('invention-score');
+const moneyElement = document.getElementById('money');
+const fameElement = document.getElementById('fame');
 
+// --- FONKSİYONLAR ---
+
+// Oyunu Başlatma Fonksiyonu
+function startGame() {
+    // Oyun durumunu sıfırla (eğer oyun yeniden başlatılıyorsa)
+    currentGameState = {
+        inventionScore: 0,
+        money: 100,
+        fame: 5,
+        currentChapterId: 'childhood' // İlk bölüm 'childhood'
+    };
+
+    // Başlat butonunu gizle ve oyun alanını göster
+    startButton.style.display = 'none';
+    storyContentDiv.style.display = 'block';
+    statsDiv.style.display = 'block';
+
+    // İlk bölümü göster
+    displayChapter(currentGameState.currentChapterId);
+    updateStats(); // Başlangıç istatistiklerini göster
+}
+
+// Bölümü Ekrana Yansıtma Fonksiyonu
+function displayChapter(chapterId) {
+    const chapter = allStoryChapters[chapterId];
+
+    // Eğer bölüm yoksa hata ver veya oyunu bitir
+    if (!chapter) {
+        chapterTitleElement.textContent = "Oyun Sonu";
+        chapterTextElement.textContent = "Hikayenin sonuna ulaştın veya bir hata oluştu. Lütfen konsolu kontrol et.";
+        choicesDiv.innerHTML = ''; // Seçenekleri temizle
+        return;
+    }
+
+    currentGameState.currentChapterId = chapterId; // Mevcut bölüm ID'sini güncelle
+    chapterTitleElement.textContent = chapter.title;
+    chapterTextElement.textContent = chapter.text;
+
+    // Seçenekleri temizle ve yeniden oluştur
+    choicesDiv.innerHTML = '';
+    chapter.choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.textContent = choice.text;
+        button.onclick = () => makeChoice(choice); // Butona tıklanınca makeChoice fonksiyonunu çağır
+        choicesDiv.appendChild(button);
+    });
+
+    updateStats(); // Her bölüm geçişinde istatistikleri güncelle
+}
+
+// Seçim Yapma ve Etkileri Uygulama Fonksiyonu
+function makeChoice(choice) {
+    // Seçimin etkilerini uygula
+    if (choice.effects) {
+        for (const effect in choice.effects) {
+            if (currentGameState.hasOwnProperty(effect)) { // Mevcut state'de bu özellik var mı kontrol et
+                currentGameState[effect] += choice.effects[effect];
+            }
+        }
+    }
+
+    // Bir sonraki bölüme geç
+    displayChapter(choice.next);
+}
+
+// İstatistikleri Ekranda Güncelleme Fonksiyonu
+function updateStats() {
+    inventionScoreElement.textContent = currentGameState.inventionScore;
+    moneyElement.textContent = currentGameState.money;
+    fameElement.textContent = currentGameState.fame;
+}
+
+// --- OLAY DİNLEYİCİLERİ ---
+
+// "Oyunu Başlat" butonuna tıklandığında startGame fonksiyonunu çağır
+startButton.addEventListener('click', startGame);
+
+// Sayfa yüklendiğinde (isteğe bağlı olarak) hemen oyunu başlatmak istersen:
+// startGame();
 // Oyunun tüm hikaye bölümlerini ve seçeneklerini içeren ana veri yapısı
 // Her bir bölüm, başlık, metin ve olası seçenekleri tanımlar.
 const allStoryChapters = {
